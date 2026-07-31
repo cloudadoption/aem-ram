@@ -11,63 +11,83 @@
  */
 
 :root {
+  /* The client's own tokens, taken from the live theme at
+     /o/ram-airways-theme/2025/css/styles.css. Decision 0023 says to use their
+     names where they define them, so these are the source and the boilerplate
+     names below are mapped onto them. Each value here is agreed by a computed
+     style read of a live page and by the client's own declaration. */
+  --ram-brand-primary-color: #c20831;
+  --ram-brand-primary-dark-color: #8d2b61;
+  --ram-brand-primary-light-color: #c87c88;
+  --ram-text-dark-color: #1a1717;
+  --ram-text-default-color: #7b7a78;
+  --ram-text-light-color: #999;
+  --ram-text-secondary-color: #595855;
+  --ram-text-primary-color: #c20831;
+  --ram-text-inverse-color: #fff;
+  --ram-background-default-color: #fff;
+  --ram-background-positive-color: #a22032;
+  --ram-background-alternative-color: #f7f7f7;
+  --ram-background-inverse-color: #1a1717;
+
   /* colors */
-  --background-color: white;
-  --light-color: #f8f8f8;
-  --dark-color: #505050;
-  --text-color: #131313;
-  --link-color: #3b63fb;
-  --link-hover-color: #1d3ecf;
+  --background-color: var(--ram-background-default-color);
+  --light-color: var(--ram-background-alternative-color);
+  --dark-color: var(--ram-text-secondary-color);
+  --text-color: var(--ram-text-dark-color);
+  --link-color: var(--ram-text-primary-color);
+
+  /* The client declares no hover token. This is their dark brand variant, taken
+     from the name rather than measured, because a hover state cannot be read
+     from a headless computed style. */
+  --link-hover-color: var(--ram-brand-primary-dark-color);
 
   /* fonts */
-  --body-font-family: roboto, roboto-fallback, sans-serif;
-  --heading-font-family: roboto-condensed, roboto-condensed-fallback, sans-serif;
+  --body-font-family: ram-primary-font, ram-primary-font-fallback, sans-serif;
+  --heading-font-family: ram-primary-font, ram-primary-font-fallback, sans-serif;
+  --secondary-font-family: ram-secondary-font, ram-primary-font-fallback, sans-serif;
 
-  /* body sizes */
-  --body-font-size-m: 22px;
-  --body-font-size-s: 19px;
-  --body-font-size-xs: 17px;
+  /* body sizes, measured on live article pages and flat across viewports */
+  --body-font-size-m: 16px;
+  --body-font-size-s: 14px;
+  --body-font-size-xs: 12px;
 
-  /* heading sizes */
-  --heading-font-size-xxl: 55px;
-  --heading-font-size-xl: 44px;
-  --heading-font-size-l: 34px;
-  --heading-font-size-m: 27px;
-  --heading-font-size-s: 24px;
-  --heading-font-size-xs: 22px;
+  /* heading sizes. live reads 32 / 28 / 24 / 20 / 16 down the levels, each at a
+     1.2 line height, and does not change at a breakpoint. */
+  --heading-font-size-xxl: 32px;
+  --heading-font-size-xl: 32px;
+  --heading-font-size-l: 28px;
+  --heading-font-size-m: 24px;
+  --heading-font-size-s: 20px;
+  --heading-font-size-xs: 16px;
 
   /* nav height */
   --nav-height: 64px;
+
+  /* The content column, measured twice over: a 22-point viewport sweep of the
+     live container, and the rendered width of a body paragraph, which reads
+     1240px at both 1280 and 1440. Below the cap the live container takes 90% of
+     the viewport rather than a fixed inset. */
+  --content-width: 90%;
+  --content-max-width: 1240px;
+
+  /* The cap does not arrive by 90% reaching 1240, which would need a 1378px
+     viewport. Live switches at exactly 1280: the column reads 1053px at 1200,
+     1089px at 1240 and 1107px at 1260, then 1240px at 1280 and above. */
+  --content-cap-breakpoint: 1280px;
 }
 
 /* fallback fonts */
+
+/* The brand faces load cross-origin, so there is a moment before the swap. A
+   size-adjusted local face makes that moment cost no reflow. 96.5% is Museo Sans
+   against Arial, measured from the rendered width of a paragraph on
+   en-gb/checked-baggage: 706.47px in the fallback against 672.14px in the brand
+   font, and 672.14 / 706.47 is 0.9514. */
 @font-face {
-  font-family: roboto-condensed-fallback;
-  size-adjust: 88.82%;
+  font-family: ram-primary-font-fallback;
+  size-adjust: 95.14%;
   src: local('Arial');
-}
-
-@font-face {
-  font-family: roboto-fallback;
-  size-adjust: 99.529%;
-  src: local('Arial');
-}
-
-@media (width >= 900px) {
-  :root {
-    /* body sizes */
-    --body-font-size-m: 18px;
-    --body-font-size-s: 16px;
-    --body-font-size-xs: 14px;
-
-    /* heading sizes */
-    --heading-font-size-xxl: 45px;
-    --heading-font-size-xl: 36px;
-    --heading-font-size-l: 28px;
-    --heading-font-size-m: 22px;
-    --heading-font-size-s: 20px;
-    --heading-font-size-xs: 18px;
-  }
 }
 
 body {
@@ -77,7 +97,7 @@ body {
   color: var(--text-color);
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-m);
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 body.appear {
@@ -105,19 +125,70 @@ h4,
 h5,
 h6 {
   margin-top: 0.8em;
-  margin-bottom: 0.25em;
+
+  /* The gap under a heading measures 15 to 24px across four live pages. */
+  margin-bottom: 20px;
   font-family: var(--heading-font-family);
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 500;
+  line-height: 1.2;
   scroll-margin: 40px;
 }
 
 h1 { font-size: var(--heading-font-size-xxl); }
-h2 { font-size: var(--heading-font-size-xl); }
+
+/* Of 710 later 32px h2s on live, 400 are weight 300 against 303 at 500. The
+   first heading on a page goes the other way, 500 on 59% of 515 pages, and that
+   one is the h1 here. */
+h2 {
+  font-size: var(--heading-font-size-xl);
+  font-weight: 300;
+}
 h3 { font-size: var(--heading-font-size-l); }
 h4 { font-size: var(--heading-font-size-m); }
 h5 { font-size: var(--heading-font-size-s); }
 h6 { font-size: var(--heading-font-size-xs); }
+
+/* The first content heading on a page with no title component takes its colour
+   from an inline style live's authors wrote, not from the theme. Over 515 such
+   pages: #b02736 on 245, the default on 97, #212529 on 79, black on 35 and
+   #c2002f on 3. `theme` metadata on 362 documents becomes the body class.
+
+   White is missing on purpose. 54 pages read white on a dark banner the
+   migration has not reproduced, and a white rule would put white text on a
+   white page. Those pages need the banner before they need the colour. */
+body.heading-brand main h1 {
+  color: #b02736;
+}
+
+body.heading-slate main h1 {
+  color: #212529;
+}
+
+body.heading-black main h1 {
+  color: #000;
+}
+
+body.heading-crimson main h1 {
+  color: #c2002f;
+}
+
+/* A page whose title was lifted from live's page-heading component. Live styles
+   that heading in the secondary family and moves it at 992px, where an article's
+   own headings do not move at all. `template: titled` metadata on 974 documents
+   becomes the body class. */
+body.titled main h1 {
+  font-family: var(--secondary-font-family);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+@media (width >= 992px) {
+  body.titled main h1 {
+    font-size: 40px;
+    line-height: 44px;
+  }
+}
 
 p,
 dl,
@@ -125,8 +196,17 @@ ol,
 ul,
 pre,
 blockquote {
-  margin-top: 0.8em;
-  margin-bottom: 0.25em;
+  /* Live leaves no top margin: 0px on 61 of 64 paragraphs across six pages,
+     against 12.8px on all 109 migrated ones. Its bottom margin is not one value,
+     4px on 53% and 0px on 33%, so this keeps the plurality. */
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+ul,
+ol {
+  /* Live indents 20px where it indents at all. The browser default is 40. */
+  padding-inline-start: 20px;
 }
 
 code,
@@ -140,6 +220,12 @@ pre {
   background-color: var(--light-color);
   overflow-x: auto;
   white-space: pre;
+}
+
+p,
+li {
+  font-weight: 300;
+  line-height: 1.4;
 }
 
 main > div {
@@ -301,20 +387,33 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
+  /* content-box would add the inset to the 90% rather than take it out, which
+     leaves the column 27px too wide. */
+  box-sizing: border-box;
+  width: var(--content-width);
+  max-width: var(--content-max-width);
   margin: auto;
-  padding: 0 24px;
+
+  /* The live column is 27px narrower than 90% of the viewport, at 375 and at 768
+     alike: 311 against 338, and 664 against 691. A constant difference at two
+     widths is a fixed inset. Logical, so it mirrors under rtl. */
+  padding-inline: 13.5px;
+}
+
+@media (width >= 1280px) {
+  main > .section > div {
+    width: var(--content-max-width);
+
+    /* No inset above the breakpoint: the live column matches the cap exactly. */
+    padding-inline: 0;
+  }
 }
 
 main > .section:first-of-type {
   margin-top: 0;
 }
 
-@media (width >= 900px) {
-  main > .section > div {
-    padding: 0 32px;
-  }
-}
+
 
 /* section metadata */
 main .section.light,
@@ -322,4 +421,41 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* A run of standalone images. The transform emits each as its own paragraph and
+   they stacked full width: four of them on how-it-works rendered 1240x738 each
+   against live's 394px. Live lays them across, three at a time in a 1240px
+   column, which is the ladder the cards use. */
+.image-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.image-row p {
+  margin: 0;
+}
+
+.image-row img {
+  width: 100%;
+  height: auto;
+}
+
+@media (width >= 992px) {
+  .image-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 1280px) {
+  .image-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* A pair reads as a pair at any width rather than leaving a gap. */
+  .image-row-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

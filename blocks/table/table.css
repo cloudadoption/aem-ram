@@ -1,0 +1,37 @@
+.table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--body-font-size-m);
+}
+
+.table th,
+.table td {
+  padding: 8px 12px 8px 15px;
+  text-align: start;
+  vertical-align: top;
+
+  /* Live's row rule is #dee2e6, much lighter than the body colour. */
+  border-block-end: 1px solid #dee2e6;
+}
+
+.table thead th {
+  /* Live's table head is the client's own positive-background token, #a22032,
+     with white text at weight 400. Measured on checked-baggage in English and
+     German. The boilerplate drew grey with dark bold text. */
+  background-color: var(--ram-background-positive-color);
+  color: #fff;
+  font-weight: 400;
+  border-block-end-width: 2px;
+}
+
+.table tbody tr:last-child th,
+.table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+/* A table wider than its column can be scrolled rather than squeezed, and the
+   scroll starts at the reading edge in either direction. */
+.table {
+  overflow-x: auto;
+}
+
