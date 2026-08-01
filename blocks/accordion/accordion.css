@@ -1,0 +1,37 @@
+.accordion .accordion-item {
+  /* Same light row rule as the table block; live separates FAQ items this way. */
+  border-block-end: 1px solid #dee2e6;
+}
+
+.accordion .accordion-item-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px;
+  color: var(--ram-brand-primary-color);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.accordion .accordion-item-label::-webkit-details-marker {
+  display: none;
+}
+
+/* The plus is drawn here, never authored: the DA canvas strips empty spans on
+   save, so an authored icon would not survive an edit. */
+.accordion .accordion-item-label::after {
+  content: '+';
+  font-size: 1.4rem;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.accordion .accordion-item[open] .accordion-item-label::after {
+  transform: rotate(45deg);
+}
+
+.accordion .accordion-item-body {
+  padding-block-end: 16px;
+}
