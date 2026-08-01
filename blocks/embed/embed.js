@@ -17,13 +17,14 @@ export function toEmbedUrl(href) {
     return null;
   }
   const host = url.hostname;
+  const isHost = (allowed) => host === allowed || host.endsWith(`.${allowed}`);
   if (host === 'youtu.be') return `https://www.youtube.com/embed${url.pathname}`;
-  if (host.endsWith('youtube.com')) {
+  if (isHost('youtube.com')) {
     if (url.pathname.startsWith('/embed/')) return href;
     const id = url.searchParams.get('v');
     return id ? `https://www.youtube.com/embed/${id}` : null;
   }
-  if (host.endsWith('hsforms.net')) return href;
+  if (isHost('hsforms.net')) return href;
   return null;
 }
 
