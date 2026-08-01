@@ -36,4 +36,12 @@ describe('toEmbedUrl', () => {
     assert.equal(toEmbedUrl('https://example.com/page'), null);
     assert.equal(toEmbedUrl('not a url'), null);
   });
+
+  // The host check is anchored at a dot: a registered domain merely ending in
+  // the allowed suffix must not be framed.
+  it('rejects lookalike hosts that end in an allowed suffix', () => {
+    assert.equal(toEmbedUrl('https://evilyoutube.com/watch?v=abc'), null);
+    assert.equal(toEmbedUrl('https://evilyoutube.com/embed/abc'), null);
+    assert.equal(toEmbedUrl('https://evilhsforms.net/forms/embed/frame.html'), null);
+  });
 });
