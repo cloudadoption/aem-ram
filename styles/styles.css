@@ -368,9 +368,14 @@ button.button.accent:disabled:focus-visible {
   color: var(--dark-color);
 }
 
+/* No `width: auto` here. It overrides the width the markup declares, and an unloaded image has no
+   intrinsic size, so auto resolves to zero and the page reserves nothing. Measured with media_*
+   responses blocked on /ru-ru/safar-flyer/our-offers: images declaring 600x400 and 801x446 reserved
+   0x0, and without the declaration they reserved 344x229 and 344x191, the container width with the
+   declared aspect ratio. max-width still caps the rendered size, so the final layout is unchanged and
+   only the pre-load box differs. */
 main img {
   max-width: 100%;
-  width: auto;
   height: auto;
 }
 
