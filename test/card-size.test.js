@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { copyIntrinsicSize } from '../blocks/cards/card-size.js';
+import copyIntrinsicSize from '../blocks/cards/card-size.js';
 
 // The served markup carries the intrinsic size on every card image, e.g.
 // width="60" height="80" on checked-baggage. cards.js replaces each picture with
