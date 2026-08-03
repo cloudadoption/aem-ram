@@ -87,3 +87,29 @@ describe('the size-adjusted fallback face', () => {
     assert.match(face, /src:\s*local\(/);
   });
 });
+
+// The brand faces are requested at +425ms, after the CSS is parsed, so every page renders in the
+// fallback and reflows on swap. Measured across 61 pages, that reflow is the only remaining layout
+// shift on the estate and it tracks text length: the same children page reads 0.1162 in pt-pt, 0.0748
+// in tr-tr and 0.0338 in ar-sa. museosans_500 carries body text at both 400 and 500, so it is the one
+// worth fetching before first paint. A cross-origin preload needs crossorigin or it is fetched twice.
+describe('the body font preload', () => {
+  it('preloads the face that carries body text', () => {
+    assert.match(head, /<link[^>]*rel="preload"[^>]*museosans_500-webfont\.woff2/);
+  });
+
+  it('declares it as a font so the browser gives it the right priority', () => {
+    const link = /<link[^>]*museosans_500-webfont\.woff2[^>]*>/.exec(head)[0];
+    assert.match(link, /as="font"/);
+    assert.match(link, /type="font\/woff2"/);
+  });
+
+  it('carries crossorigin, without which the preload is wasted', () => {
+    const link = /<link[^>]*museosans_500-webfont\.woff2[^>]*>/.exec(head)[0];
+    assert.match(link, /crossorigin/);
+  });
+
+  it('still preconnects to the origin that serves it', () => {
+    assert.match(head, /rel="preconnect"[^>]*royalairmaroc\.com/);
+  });
+});
