@@ -1,6 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { markIconCards } from './card-icons.js';
-import copyIntrinsicSize from './card-size.js';
+import copyIntrinsicSize, { reserveIconBox } from './card-size.js';
 
 export default function decorate(block) {
   /* change to ul, li */
@@ -16,7 +16,9 @@ export default function decorate(block) {
   });
   ul.querySelectorAll('picture > img').forEach((img) => {
     const picture = createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }]);
-    copyIntrinsicSize(img, picture.querySelector('img'));
+    const built = picture.querySelector('img');
+    copyIntrinsicSize(img, built);
+    reserveIconBox(built);
     img.closest('picture').replaceWith(picture);
   });
   markIconCards(ul);
