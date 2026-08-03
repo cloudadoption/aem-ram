@@ -80,13 +80,17 @@
 /* fallback fonts */
 
 /* The brand faces load cross-origin, so there is a moment before the swap. A
-   size-adjusted local face makes that moment cost no reflow. 96.5% is Museo Sans
-   against Arial, measured from the rendered width of a paragraph on
-   en-gb/checked-baggage: 706.47px in the fallback against 672.14px in the brand
-   font, and 672.14 / 706.47 is 0.9514. */
+   size-adjusted local face makes that moment cost no reflow.
+
+   95.14% came from one paragraph and pointed the wrong way. Measured against the
+   loaded brand face on eight real paragraphs of en-gb/how-it-works at their own
+   computed size, the adjusted fallback rendered 6.75% NARROWER than the brand
+   font, mean ratio 0.9325, so text fitted more words per line and re-wrapped when
+   the brand face swapped in. Sweeping the value in Chrome: 95.14% gives 0.9325,
+   100% gives 0.9803, 102% gives 0.9999 and 103% overshoots to 1.0097. */
 @font-face {
   font-family: ram-primary-font-fallback;
-  size-adjust: 95.14%;
+  size-adjust: 102%;
   src: local('Arial');
 }
 

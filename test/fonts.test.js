@@ -67,3 +67,23 @@ describe('brand fonts', () => {
     assert.match(styles, /size-adjust:/);
   });
 });
+
+// 95.14% came from one paragraph and pointed the wrong way. Measured in Chrome against the
+// loaded brand face on eight real paragraphs of /en-gb/how-it-works at their own computed
+// size, the adjusted fallback rendered 6.75 per cent NARROWER than the brand font, mean ratio
+// 0.9325. Sweeping the value in the browser: 95.14% gives 0.9325, 100% gives 0.9803, 102%
+// gives 0.9999 and 103% overshoots to 1.0097. A narrower fallback fits more words per line, so
+// text re-wraps when the brand face swaps in, which is the residual CLS on the two pages still
+// short of 100.
+describe('the size-adjusted fallback face', () => {
+  const face = /@font-face \{[^}]*ram-primary-font-fallback[^}]*\}/.exec(styles)[0];
+
+  it('matches the brand font width rather than undercutting it', () => {
+    const adjust = Number(/size-adjust:\s*([\d.]+)%/.exec(face)[1]);
+    assert.ok(adjust >= 101.5 && adjust <= 102.5, `expected about 102%, got ${adjust}%`);
+  });
+
+  it('still resolves to a local face, so the fallback costs no request', () => {
+    assert.match(face, /src:\s*local\(/);
+  });
+});
