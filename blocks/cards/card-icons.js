@@ -17,14 +17,31 @@ export const isIconImage = (naturalWidth) => Number(naturalWidth) > 0
 // smaller shift: a photo goes 236px to 200px where an icon went 200px to 105px.
 export const isPhotoImage = (naturalWidth) => Number(naturalWidth) > ICON_MAX_WIDTH;
 
+// naturalWidth is known only once the image has loaded, so marking from it changed the card's
+// height after first paint. The served markup declares the size and separates the two shapes on
+// the same line, 60 to 106 wide for icons against 260 and 395 for photos, so the class can be set
+// during decoration and nothing moves. null means the size could not be read, which keeps the
+// load-event path rather than guessing icon.
+export const declaredIsPhoto = (img) => {
+  if (typeof img?.getAttribute !== 'function') return null;
+  const width = Number(img.getAttribute('width'));
+  if (!Number.isFinite(width) || width <= 0) return null;
+  return isPhotoImage(width);
+};
+
 export const markIconCards = (list) => {
   list.querySelectorAll('img').forEach((img) => {
     const mark = () => {
-      if (!isPhotoImage(img.naturalWidth)) return;
       const item = img.closest('li');
       if (item) item.classList.add('cards-card-photo');
     };
-    if (img.complete) mark();
-    else img.addEventListener('load', mark, { once: true });
+    const onLoad = () => {
+      if (isPhotoImage(img.naturalWidth)) mark();
+    };
+    const declared = declaredIsPhoto(img);
+    if (declared === true) { mark(); return; }
+    if (declared === false) return;
+    if (img.complete) onLoad();
+    else img.addEventListener('load', onLoad, { once: true });
   });
 };
