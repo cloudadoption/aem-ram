@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { isBareEmbedLink } from '../scripts/embed-url.js';
+import { embedTitle, isBareEmbedLink } from '../scripts/embed-url.js';
 
 // A paragraph stands in as an object with children and textContent, the same way the
 // accordion and table tests stand in for cells.
@@ -46,5 +46,29 @@ describe('isBareEmbedLink', () => {
   it('refuses nothing at all', () => {
     assert.equal(isBareEmbedLink(null), false);
     assert.equal(isBareEmbedLink({ children: [], textContent: '' }), false);
+  });
+});
+
+// The autoblock's own doing: the migrated documents link the URL to itself, so the block's
+// `link.textContent` title made the iframe's accessible name a raw URL on every embed page.
+describe('embedTitle', () => {
+  it('ignores link text that is just the url', () => {
+    assert.equal(
+      embedTitle('https://www.youtube.com/embed/_KMGy0hvECQ?controls=0', 'https://www.youtube.com/embed/_KMGy0hvECQ?controls=0'),
+      'Embedded content',
+    );
+  });
+
+  it('ignores link text that is any url', () => {
+    assert.equal(embedTitle('https://youtu.be/xdmEyf4XKSE', 'https://www.youtube.com/embed/xdmEyf4XKSE'), 'Embedded content');
+  });
+
+  it('keeps a real authored label', () => {
+    assert.equal(embedTitle('Dream Africa, meet Morocco', 'https://www.youtube.com/embed/x'), 'Dream Africa, meet Morocco');
+  });
+
+  it('falls back when there is no label', () => {
+    assert.equal(embedTitle('', 'https://www.youtube.com/embed/x'), 'Embedded content');
+    assert.equal(embedTitle('   ', 'https://www.youtube.com/embed/x'), 'Embedded content');
   });
 });
