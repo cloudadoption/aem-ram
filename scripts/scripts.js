@@ -14,6 +14,7 @@ import {
 import { decorateImageRows } from './image-rows.js';
 
 import { applyLocale } from './locale.js';
+import { isBareEmbedLink } from './embed-url.js';
 
 if (window.trustedTypes && window.trustedTypes.createPolicy) {
   const innerTT = window.trustedTypes.createPolicy('tt-inner', {
@@ -80,6 +81,24 @@ function buildWidgetAutoBlocks(main) {
  * Builds all synthetic blocks in a container element.
  * @param {Element} main The container element
  */
+/**
+ * Wraps each paragraph that holds nothing but an embeddable link in an embed block, so the
+ * migrated documents' bare youtube and hubspot URLs render as frames instead of as text.
+ * @param {Element} main The container element
+ */
+function buildEmbedAutoBlocks(main) {
+  [...main.querySelectorAll('p')].filter(isBareEmbedLink).forEach((p) => {
+    const block = document.createElement('div');
+    block.className = 'embed';
+    const row = document.createElement('div');
+    const cell = document.createElement('div');
+    cell.append(...p.childNodes);
+    row.append(cell);
+    block.append(row);
+    p.replaceWith(block);
+  });
+}
+
 function buildAutoBlocks(main) {
   try {
     // auto load `*/fragments/*` references
@@ -100,6 +119,7 @@ function buildAutoBlocks(main) {
       });
     }
     buildWidgetAutoBlocks(main);
+    buildEmbedAutoBlocks(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);

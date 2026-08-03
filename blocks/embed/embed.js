@@ -1,32 +1,7 @@
-/**
- * Turns an authored link into the URL the iframe should load.
- *
- * Youtube watch and youtu.be forms normalize to the embed form. A URL that is
- * already an embed (youtube with live's ?controls=0 params, a hubspot form
- * frame) passes through verbatim. Anything else returns null and the link
- * renders as a link, so an author's stray URL never becomes a frame.
- *
- * @param {string} href the authored link
- * @returns {string|null} the iframe src, or null to leave the link alone
- */
-export function toEmbedUrl(href) {
-  let url;
-  try {
-    url = new URL(href);
-  } catch {
-    return null;
-  }
-  const host = url.hostname;
-  const isHost = (allowed) => host === allowed || host.endsWith(`.${allowed}`);
-  if (host === 'youtu.be') return `https://www.youtube.com/embed${url.pathname}`;
-  if (isHost('youtube.com')) {
-    if (url.pathname.startsWith('/embed/')) return href;
-    const id = url.searchParams.get('v');
-    return id ? `https://www.youtube.com/embed/${id}` : null;
-  }
-  if (isHost('hsforms.net')) return href;
-  return null;
-}
+import { embedTitle, toEmbedUrl } from '../../scripts/embed-url.js';
+
+// Re-exported so the block stays the one place a caller has to know about.
+export { toEmbedUrl };
 
 /**
  * loads and decorates the block
@@ -37,7 +12,7 @@ export default function decorate(block) {
   const src = link ? toEmbedUrl(link.href) : null;
   if (!src) return;
 
-  const title = link.textContent.trim() || 'Embedded content';
+  const title = embedTitle(link.textContent);
   block.textContent = '';
   const frame = document.createElement('div');
   frame.className = 'embed-frame';
