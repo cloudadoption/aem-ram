@@ -94,6 +94,16 @@
   src: local('Arial');
 }
 
+/* The served markup carries `<html lang="ar">` but no dir attribute, so an Arabic page rendered
+   left-to-right until applyLocale ran in the eager phase and flipped the whole document. The observer
+   named the source as HTML itself with an unchanged rect, a direction flip rather than a resize, and it
+   was the last page in the 61-page sample above 0.1. This stylesheet blocks rendering and the lang is
+   already server-side, so the direction can be set at first paint without a script. applyLocale still
+   sets the attribute, for anything that reads it. */
+html:lang(ar) {
+  direction: rtl;
+}
+
 body {
   display: none;
   margin: 0;
