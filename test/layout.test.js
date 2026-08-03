@@ -289,12 +289,13 @@ describe('the heading weights', () => {
   });
 });
 
-// `main img { width: auto }` overrides the width the markup declares, and with no intrinsic size an
-// unloaded image resolves auto to zero, so the page reserves nothing and reflows when the image lands.
-// Measured with media_* responses blocked on /ru-ru/safar-flyer/our-offers: images declaring 600x400 and
-// 801x446 reserved 0x0, and dropping only the width declaration reserved 344x229 and 344x191, the
-// container width with the declared aspect ratio. max-width still caps the rendered size, so the final
-// layout is unchanged and only the pre-load box differs. The card block already reserves its own images.
+// `main img { width: auto }` overrides the width the markup declares, and with no intrinsic
+// size an unloaded image resolves auto to zero, so the page reserves nothing and reflows when
+// the image lands. Measured with media_* responses blocked on /ru-ru/safar-flyer/our-offers:
+// images declaring 600x400 and 801x446 reserved 0x0, and dropping only the width declaration
+// reserved 344x229 and 344x191, the container width with the declared aspect ratio. max-width
+// still caps the rendered size, so the final layout is unchanged and only the pre-load box
+// differs. The card block already reserves its own images.
 describe('a content image', () => {
   // Assertions about what the file declares must not read its comments.
   const rule = /main img \{[^}]*\}/.exec(styles.replace(/\/\*[\s\S]*?\*\//g, ''))[0];
