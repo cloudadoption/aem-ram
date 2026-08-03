@@ -61,46 +61,46 @@ describe('copyIntrinsicSize', () => {
   });
 });
 
-// The declared attributes reserve nothing, because `main img { width: auto; height: auto }` makes both
-// used values auto: the attributes give an aspect ratio and no definite size. Sampled every frame on
-// /en-gb/checked-baggage, the card is 0px tall with the image box at 0 until the image loads at 203ms,
-// then jumps to 156px. The final box is exactly the declared size, 60x80, 61x59 and 78x74, so writing
-// those as an inline style reserves precisely what the image will occupy.
+// The declared attributes reserve nothing, because `main img { width: auto; height: auto }` makes
+// both used values auto: the attributes give an aspect ratio and no definite size. Sampled every
+// frame on /en-gb/checked-baggage, the card is 0px tall with the image box at 0 until the image
+// loads at 203ms, then jumps to 156px. The final box is exactly the declared size, 60x80, 61x59 and
+// 78x74, so writing those as an inline style reserves what the image will occupy.
 //
-// Only for an icon. A photo card is styled `width: 100%; height: 200px; object-fit: cover`, so an inline
-// pixel size would fight the CSS; that case reserves its band by being classed during decoration.
+// Only for an icon. A photo card is styled `width: 100%; height: 200px; object-fit: cover`, so an
+// inline pixel size would fight the CSS; that case is classed during decoration instead.
 describe('reserveIconBox', () => {
-  const fakeImg = (attrs = {}) => ({
+  const styled = (attrs = {}) => ({
     attrs,
     style: {},
     getAttribute: (k) => (k in attrs ? attrs[k] : null),
   });
 
   it('writes the declared size as an inline pixel size', () => {
-    const img = fakeImg({ width: '61', height: '59' });
+    const img = styled({ width: '61', height: '59' });
     reserveIconBox(img);
     assert.equal(img.style.width, '61px');
     assert.equal(img.style.height, '59px');
   });
 
   it('leaves an image with no declared size alone', () => {
-    const img = fakeImg();
+    const img = styled();
     reserveIconBox(img);
     assert.deepEqual(img.style, {});
   });
 
   it('leaves a photo alone, because its CSS box is not its declared box', () => {
-    const img = fakeImg({ width: '395', height: '250' });
+    const img = styled({ width: '395', height: '250' });
     reserveIconBox(img);
     assert.deepEqual(img.style, {});
   });
 
   it('leaves a non-numeric or zero size alone', () => {
-    for (const attrs of [{ width: 'auto', height: '59' }, { width: '0', height: '59' }]) {
-      const img = fakeImg(attrs);
+    [{ width: 'auto', height: '59' }, { width: '0', height: '59' }].forEach((attrs) => {
+      const img = styled(attrs);
       reserveIconBox(img);
       assert.deepEqual(img.style, {});
-    }
+    });
   });
 
   it('survives a missing image', () => {
