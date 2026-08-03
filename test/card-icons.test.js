@@ -121,13 +121,14 @@ describe('isPhotoImage', () => {
   });
 });
 
-// The photo class was added on the image's load event, from naturalWidth, so the card's height changed
-// from auto to 200px after first paint. That is the estate's only remaining layout shift: Lighthouse
-// 12.8.2 mobile on /en-gb/checked-baggage reads CLS 0.218 and a score of 89, where the go-live
-// checklist wants 100, and cls-culprits-insight points at li > div.cards-card-image > picture > img.
+// The photo class was added on the image's load event, from naturalWidth, so the card's height
+// changed from auto to 200px after first paint. That is the estate's only remaining layout shift:
+// Lighthouse 12.8.2 mobile on /en-gb/checked-baggage reads CLS 0.218 and a score of 89, where the
+// go-live checklist wants 100, and cls-culprits-insight points at
+// li > div.cards-card-image > picture > img.
 //
-// The served markup already declares the size, and it separates the two shapes on the same 200px line:
-// 60 to 78 wide on checked-baggage, 100 to 106 on how-it-works, against 260 and 395 on
+// The served markup already declares the size, and it separates the two shapes on the same 200px
+// line: 60 to 78 wide on checked-baggage, 100 to 106 on how-it-works, against 260 and 395 on
 // preparing-your-trip. So the card can be classed before the image loads and nothing moves.
 describe('declaredIsPhoto', () => {
   const img = (attrs) => ({ getAttribute: (k) => (k in attrs ? attrs[k] : null) });
