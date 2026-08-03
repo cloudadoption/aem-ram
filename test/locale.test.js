@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
 import { LOCALES, applyLocale, localeForPath } from '../scripts/locale.js';
@@ -70,5 +71,24 @@ describe('applyLocale', () => {
     const html = element({ lang: '  ' });
     applyLocale(html, '/ru-ru/o-nas');
     assert.equal(html.lang, 'ru');
+  });
+});
+
+// The served markup carries `<html lang="ar">` but no dir, so an Arabic page renders left-to-right until
+// applyLocale runs in loadEager and then flips the whole document. The observer names the source as HTML
+// itself with an unchanged rect, which is a direction flip rather than a resize, and it is the last page
+// in the 61-page sample above 0.1. styles.css is a blocking stylesheet and the lang is already
+// server-side, so CSS can set the direction at first paint with no script.
+describe('right-to-left at first paint', () => {
+  const styles = readFileSync(new URL('../styles/styles.css', import.meta.url), 'utf8');
+  const declarations = styles.replace(/\/\*[\s\S]*?\*\//g, '');
+
+  it('sets the direction from the served lang, not from script', () => {
+    assert.match(declarations, /html:lang\(ar\)[^{]*\{[^}]*direction:\s*rtl/);
+  });
+
+  it('keys off the base language, so ar-SA and ar both match', () => {
+    const rule = /html:lang\(ar\)[^{]*\{[^}]*\}/.exec(declarations)[0];
+    assert.doesNotMatch(rule, /lang\(ar-/, 'a region-qualified selector would miss lang="ar"');
   });
 });
