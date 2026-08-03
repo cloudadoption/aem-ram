@@ -88,11 +88,12 @@ describe('the size-adjusted fallback face', () => {
   });
 });
 
-// The brand faces are requested at +425ms, after the CSS is parsed, so every page renders in the
-// fallback and reflows on swap. Measured across 61 pages, that reflow is the only remaining layout
-// shift on the estate and it tracks text length: the same children page reads 0.1162 in pt-pt, 0.0748
-// in tr-tr and 0.0338 in ar-sa. museosans_500 carries body text at both 400 and 500, so it is the one
-// worth fetching before first paint. A cross-origin preload needs crossorigin or it is fetched twice.
+// The brand faces are requested at +425ms, after the CSS is parsed, so every page renders in
+// the fallback and reflows on swap. Measured across 61 pages, that reflow is the only remaining
+// layout shift on the estate and it tracks text length: the same children page reads 0.1162 in
+// pt-pt, 0.0748 in tr-tr and 0.0338 in ar-sa. museosans_500 carries body text at both 400 and
+// 500, so it is the one worth fetching before first paint. A cross-origin preload needs
+// crossorigin or it is fetched twice.
 describe('the body font preload', () => {
   it('preloads the face that carries body text', () => {
     assert.match(head, /<link[^>]*rel="preload"[^>]*museosans_500-webfont\.woff2/);
