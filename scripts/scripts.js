@@ -189,8 +189,13 @@ async function loadEager(doc) {
   if (main) {
     decorateMain(main);
     decorateImageRows(main, document);
-    document.body.classList.add('appear');
+    // The body is hidden until `appear`, so revealing it before the first section has loaded shows
+    // that section undecorated and the block then restructures the DOM under the reader. On
+    // /en-gb/checked-baggage, whose cards sit in section 0 inside the first viewport, that cost CLS
+    // 0.218 and a Lighthouse mobile score of 89, where pages with the same blocks below the fold
+    // score 100.
     await loadSection(main.querySelector('.section'), waitForFirstImage);
+    document.body.classList.add('appear');
   }
 
   try {

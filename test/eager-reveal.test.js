@@ -24,6 +24,6 @@ describe('the eager phase', () => {
   });
 
   it('still waits for the first image, which is what holds LCP steady', () => {
-    assert.match(eager, /loadSection\([^)]*waitForFirstImage/);
+    assert.match(eager, /loadSection\([\s\S]*?waitForFirstImage\)/);
   });
 });
