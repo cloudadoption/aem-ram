@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
-  ICON_MAX_WIDTH, isIconImage, isPhotoImage, markIconCards,
+  ICON_MAX_WIDTH, declaredIsPhoto, isIconImage, isPhotoImage, markIconCards,
 } from '../blocks/cards/card-icons.js';
 
 // Live's card images come in two shapes. A photo fills the card and is 200px
@@ -118,5 +118,50 @@ describe('isPhotoImage', () => {
     [27, 105, 200, 201, 1647].forEach((w) => {
       assert.notEqual(isIconImage(w), isPhotoImage(w));
     });
+  });
+});
+
+// The photo class was added on the image's load event, from naturalWidth, so the card's height changed
+// from auto to 200px after first paint. That is the estate's only remaining layout shift: Lighthouse
+// 12.8.2 mobile on /en-gb/checked-baggage reads CLS 0.218 and a score of 89, where the go-live
+// checklist wants 100, and cls-culprits-insight points at li > div.cards-card-image > picture > img.
+//
+// The served markup already declares the size, and it separates the two shapes on the same 200px line:
+// 60 to 78 wide on checked-baggage, 100 to 106 on how-it-works, against 260 and 395 on
+// preparing-your-trip. So the card can be classed before the image loads and nothing moves.
+describe('declaredIsPhoto', () => {
+  const img = (attrs) => ({ getAttribute: (k) => (k in attrs ? attrs[k] : null) });
+
+  it('calls a 395px declared width a photo, which preparing-your-trip carries', () => {
+    assert.equal(declaredIsPhoto(img({ width: '395' })), true);
+  });
+
+  it('calls a 61px declared width an icon, which checked-baggage carries', () => {
+    assert.equal(declaredIsPhoto(img({ width: '61' })), false);
+  });
+
+  it('calls a 106px declared width an icon, which how-it-works carries', () => {
+    assert.equal(declaredIsPhoto(img({ width: '106' })), false);
+  });
+
+  it('draws the line in the same place as the natural-width test', () => {
+    assert.equal(declaredIsPhoto(img({ width: String(ICON_MAX_WIDTH) })), false);
+    assert.equal(declaredIsPhoto(img({ width: String(ICON_MAX_WIDTH + 1) })), true);
+  });
+
+  // Unknown, not "icon": an image with no declared size has to keep the load-event path or a photo
+  // card would lose its band entirely.
+  it('answers null when no width is declared', () => {
+    assert.equal(declaredIsPhoto(img({})), null);
+  });
+
+  it('answers null for a width that is not a positive number', () => {
+    assert.equal(declaredIsPhoto(img({ width: 'auto' })), null);
+    assert.equal(declaredIsPhoto(img({ width: '0' })), null);
+    assert.equal(declaredIsPhoto(img({ width: '-5' })), null);
+  });
+
+  it('answers null rather than throwing when there is no image', () => {
+    assert.equal(declaredIsPhoto(null), null);
   });
 });
