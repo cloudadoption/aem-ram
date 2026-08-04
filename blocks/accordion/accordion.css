@@ -1,35 +1,79 @@
+/* Live draws each question as a row with a rule under it and a chevron that turns over when the panel
+   opens. Live's own rules, from /o/ram-airways-theme/2025/css/styles.css:
+
+   .accordion__item{border-block-end:.0625rem solid var(--ram-neutral-200-color)}
+   .accordion__button{padding-block:.75rem}
+   .accordion__title{margin-inline-start:.25rem;color:var(--ram-text-dark-color)}
+   .accordion__chevron{margin-inline-end:.25rem;color:var(--ram-text-dark-color)}
+   .accordion__button.active .accordion__chevron{transform:rotate(180deg)}
+
+   Ported from da-ram #57 with our own class names kept: accordion.js writes .accordion-item and
+   .accordion-item-label where their block styles bare `details` and `summary`. */
 .accordion .accordion-item {
-  /* Same light row rule as the table block; live separates FAQ items this way. */
-  border-block-end: 1px solid #dee2e6;
+  /* The accordion's own neutral token, not the table block's #dee2e6, which this had copied. */
+  border-block-end: 1px solid var(--ram-neutral-200-color);
 }
 
 .accordion .accordion-item-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding-block: 16px;
-  color: var(--ram-brand-primary-color);
-  font-weight: 600;
+  gap: 16px;
+
+  /* Live's .75rem. This drew 16, which with the leading below made a 50px row against live's 46. */
+  padding-block: 12px;
+  padding-inline-start: 4px;
+
+  /* Live's question is dark at body weight and body leading, 16px on 22.4px at 400, because the
+     component overrides the heading ramp. This drew the brand red at 600 and took the page's 1.5. */
+  color: var(--ram-text-dark-color);
+  font-weight: 400;
+  line-height: 1.4;
   cursor: pointer;
   list-style: none;
 }
 
+/* The pipeline wraps the question in a paragraph and live's is an h3.accordion__title with no margin,
+   so the global 4px paragraph margin added to the row. The type is inherited rather than left to the
+   child for the same reason live overrides its own heading ramp: a question arriving as a heading
+   would otherwise draw at the heading size. */
+.accordion .accordion-item-label > * {
+  margin-block: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+/* The default triangle sits before the text and cannot be positioned, so it goes and the chevron
+   below takes its place. */
 .accordion .accordion-item-label::-webkit-details-marker {
   display: none;
 }
 
-/* The plus is drawn here, never authored: the DA canvas strips empty spans on
-   save, so an authored icon would not survive an edit. */
+/* Live's marker is i.accordion__chevron.ram-icon-chevron-down, a 20x20 box at font-size 20px in
+   --ram-text-dark-color with margin-inline-end 4px, turned 180deg while the panel is open. The glyph
+   comes from the client's own ram-icons font, which this repository does not load, so the chevron is
+   drawn: an 8px square with two 2px edges, turned 45deg so it points down. Its trailing edge sits
+   10px in, which puts the ink where live's 20px glyph centres.
+
+   Drawn and never authored: the DA canvas strips an empty span on save, so an authored icon would not
+   survive an edit. */
 .accordion .accordion-item-label::after {
-  content: '+';
-  font-size: 1.4rem;
-  line-height: 1;
+  content: '';
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 10px;
+  border-inline-end: 2px solid var(--ram-text-dark-color);
+  border-block-end: 2px solid var(--ram-text-dark-color);
+  transform: rotate(45deg);
   transition: transform 0.2s;
 }
 
+/* Closed points down and open points up, which is live's 180deg turn from the 45deg base. */
 .accordion .accordion-item[open] .accordion-item-label::after {
-  transform: rotate(45deg);
+  transform: rotate(225deg);
 }
 
 .accordion .accordion-item-body {
