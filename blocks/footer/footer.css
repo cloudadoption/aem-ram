@@ -153,7 +153,10 @@ footer .footer ul:has(img) {
   list-style: none;
 }
 
-footer .footer ul:has(img) li > img {
+/* A descendant selector, not `li > img`: EDS wraps the image in a <picture>, so the served shape is
+   <li><picture><img></picture></li> and the child selector reached nothing. Read on the branch
+   preview, where the logos drew at their natural 34x20 and 40x23 with the default `fill`. */
+footer .footer ul:has(img) img {
   width: 40px;
   height: 24px;
   object-fit: contain;

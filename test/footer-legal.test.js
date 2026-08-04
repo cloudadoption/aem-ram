@@ -151,15 +151,23 @@ describe('the payment strip styling', () => {
     assert.match(rule[0], /list-style:\s*none/);
   });
 
+  // A child selector does not reach the image: EDS wraps it in a <picture>, so the served shape is
+  // <li><picture><img></picture></li> and `li > img` matched nothing. Read on the branch preview,
+  // where the logos drew at their natural 34x20 and 40x23 with the default `object-fit: fill`.
+  it('reaches the logo through the picture EDS wraps it in', () => {
+    const rule = /footer[^{]*ul:has\(img\)\s+img[^{]*\{[^}]*\}/.exec(css);
+    assert.ok(rule, 'a rule selects the logo image as a descendant');
+    assert.doesNotMatch(css, /ul:has\(img\)\s+li\s*>\s*img/);
+  });
+
   it('gives each logo live\'s measured 40x24 box', () => {
-    const rule = /footer[^{]*li\s*>\s*img[^{]*\{[^}]*\}/.exec(css);
-    assert.ok(rule, 'a rule selects the logo image');
+    const rule = /footer[^{]*ul:has\(img\)\s+img[^{]*\{[^}]*\}/.exec(css);
     assert.match(rule[0], /width:\s*40px/);
     assert.match(rule[0], /height:\s*24px/);
   });
 
   it('contains rather than fills, so live\'s oversized assets are not squashed', () => {
-    const rule = /footer[^{]*li\s*>\s*img[^{]*\{[^}]*\}/.exec(css);
+    const rule = /footer[^{]*ul:has\(img\)\s+img[^{]*\{[^}]*\}/.exec(css);
     assert.match(rule[0], /object-fit:\s*contain/);
   });
 });
