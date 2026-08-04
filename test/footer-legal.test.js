@@ -129,3 +129,37 @@ describe('the footer band padding', () => {
     assert.doesNotMatch(css, /@media \(width >= 900px\)/);
   });
 });
+
+// Live's payment strip is a heading over a flex row of logo boxes. Its own rules, read off the 2025
+// sheet and confirmed in a browser at 1440 on /en-gb/fiji-airways: 25 logos, container
+// `display:flex; flex-wrap:wrap; gap:1rem`, and `.footer__paymentImage{width:2.5rem;height:1.5rem}`,
+// so 40x24 each, wrapping to two rows.
+//
+// One deliberate divergence. Live computes `object-fit: fill`, and its assets are not 40x24: the iDeal
+// logo is 1920x728, 2.64:1, squashed into 1.67:1. `contain` shows the same logo undistorted in the same
+// box, so nothing else moves. Called out in the PR rather than buried.
+//
+// The strip is selected with `:has(img)` rather than a JS marker: a list of images is what it is, and
+// that needs no pass over the DOM.
+describe('the payment strip styling', () => {
+  it('lays the logos out in live\'s wrapping flex row with its 16px gap', () => {
+    const rule = /footer[^{]*ul:has\(img\)[^{]*\{[^}]*\}/.exec(css);
+    assert.ok(rule, 'a rule selects the logo list');
+    assert.match(rule[0], /display:\s*flex/);
+    assert.match(rule[0], /flex-wrap:\s*wrap/);
+    assert.match(rule[0], /gap:\s*16px/);
+    assert.match(rule[0], /list-style:\s*none/);
+  });
+
+  it('gives each logo live\'s measured 40x24 box', () => {
+    const rule = /footer[^{]*li\s*>\s*img[^{]*\{[^}]*\}/.exec(css);
+    assert.ok(rule, 'a rule selects the logo image');
+    assert.match(rule[0], /width:\s*40px/);
+    assert.match(rule[0], /height:\s*24px/);
+  });
+
+  it('contains rather than fills, so live\'s oversized assets are not squashed', () => {
+    const rule = /footer[^{]*li\s*>\s*img[^{]*\{[^}]*\}/.exec(css);
+    assert.match(rule[0], /object-fit:\s*contain/);
+  });
+});
