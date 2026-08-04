@@ -67,27 +67,44 @@ describe('the table head', () => {
     assert.match(rootStyles, /--ram-background-positive-color:\s*#a22032/);
   });
 
+  // Live names the token rather than the hex, verbatim from its own sheet:
+  // .table-responsive table th{background-color:var(--ram-background-positive-color);
+  //   color:var(--ram-text-inverse-color);font-weight:400}
   it('puts white text on it at the measured weight', () => {
-    assert.match(head, /color:\s*#fff/);
+    assert.match(head, /color:\s*var\(--ram-text-inverse-color\)/);
+    assert.match(rootStyles, /--ram-text-inverse-color:\s*#fff/);
     assert.match(head, /font-weight:\s*400/);
   });
 
+  // Both block edges, not the bottom alone: Clay rules a row on each side and border-collapse
+  // merges the pair between two rows.
   it('gives a row the measured border rather than the body colour', () => {
     const cell = /\.table th,\n\.table td \{[\s\S]*?\n\}/.exec(declarations)[0];
-    assert.match(cell, /border-block-end:\s*1px solid #dee2e6/);
+    assert.match(cell, /border-block:\s*1px solid #dee2e6/);
     assert.doesNotMatch(cell, /var\(--dark-color\)/);
   });
 });
 
-// Live's cell padding is 8px 12px 8px 15px at 375, 900 and 1440 alike, so the
+// Live's cell padding is .5rem .75rem, which is 8px 12px, at 375, 900 and 1440 alike, so the
 // boilerplate's 600px step from 8px 12px to 12px 16px has nothing behind it.
+//
+// CORRECTED 2026-08-04 from live's own stylesheet, /o/ram-airways-theme/2025/css/styles.css:
+//   .table-responsive table th,.table-responsive table td{padding:.5rem .75rem;...}
+// and that sheet declares no 15px cell padding at all. The 15px this test asserted comes from
+// Clay's separate `th:first-child{padding-left:15px}`, so it is on the outer cells and not on
+// every one. The earlier reading generalised a first-column measurement across the row.
 describe('the table cell padding', () => {
   const styles = readFileSync(new URL('../blocks/table/table.css', import.meta.url), 'utf8');
   const declarations = styles.replace(/\/\*[\s\S]*?\*\//g, '');
 
   it('takes the measured padding', () => {
     const cell = /\.table th,\n\.table td \{[\s\S]*?\n\}/.exec(declarations)[0];
-    assert.match(cell, /padding:\s*8px 12px 8px 15px/);
+    assert.match(cell, /padding:\s*8px 12px;/);
+  });
+
+  it('puts Clay\'s 15px on the outer cells alone', () => {
+    assert.match(declarations, /:first-child \{[^}]*padding-inline-start:\s*15px/);
+    assert.match(declarations, /:last-child \{[^}]*padding-inline-end:\s*15px/);
   });
 
   it('does not step at 600px, because live does not', () => {

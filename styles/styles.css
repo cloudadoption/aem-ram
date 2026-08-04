@@ -27,6 +27,10 @@
   --ram-text-inverse-color: #fff;
   --ram-background-default-color: #fff;
   --ram-background-positive-color: #a22032;
+
+  /* The body cell colour live declares, read on the 2025 table rule. */
+  --ram-neutral-900-color: #333231;
+  --ram-neutral-200-color: #ebeae8;
   --ram-background-alternative-color: #f7f7f7;
   --ram-background-inverse-color: #1a1717;
 
