@@ -256,6 +256,16 @@ li {
   line-height: 1.4;
 }
 
+/* The browser's own rule for b and strong is `font-weight: bolder`, which is RELATIVE: from a 300 body
+   it computes to 400, one step up rather than bold. Live declares it flat, `body strong
+   {font-weight:700}` in the 2025 theme, so its bold reads 300 to 700 where this read 300 to 400. On
+   /en-gb/checked-baggage that was 12 strongs a shade heavier than the prose around them, and the estate
+   carries 4,423 bold and italic runs. */
+b,
+strong {
+  font-weight: 700;
+}
+
 /* Live's item spacing, read inside `.journal-content-article` at 1440 on six en-GB pages of the 2025
    theme: 8px on 9 prose lists, 5px on 4, and 0 on the 6 single-item lists standing in for the cells of
    reduced-mobility's div-built table. This was 0, so a live list of seven items ran 56px shorter.
