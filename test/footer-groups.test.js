@@ -194,13 +194,13 @@ describe('the group is closed before anything is painted', () => {
   });
 });
 
-// The payment strip is a heading over a list of logos, which is the same shape as the three link
-// menus, so the accordion collapsed it. Live shows the strip open and its logos are not links: 0 of
-// 25 anchors in live's PaymentMethodsPortlet carry an href, the anchor being there to hold a `title`.
+// The payment strip is a heading over a list of logos, the same shape as the three link menus, so
+// the accordion collapsed it. Live shows the strip open and its logos are not links: 0 of the 25
+// anchors in live's PaymentMethodsPortlet carry an href, the anchor holding only a `title`.
 //
-// So the discriminator is what the list contains. A menu of links collapses; a list with no link in
-// it is content and stays open. A list that cannot be asked, which is every stub in the tests above,
-// is treated as a menu, so nothing that worked before changes.
+// So what the list contains decides. A menu of links collapses. A list with no link is content and
+// stays open. A list that cannot be asked, which is each stub in the tests above, counts as a menu,
+// so what worked before is untouched.
 describe('footerGroups and a list with no links', () => {
   const listOf = (linkCount) => ({
     tagName: 'UL',

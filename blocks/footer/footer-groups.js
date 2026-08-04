@@ -10,12 +10,27 @@
 const HEADING = /^H[1-6]$/;
 const LIST = /^(UL|OL)$/;
 
+/*
+ * The payment strip is a heading over a list of logos, the same shape as the three
+ * link menus, so it collapsed behind its heading. Live shows it open, and its logos
+ * are not links: 0 of the 25 anchors in live's PaymentMethodsPortlet carry an href,
+ * the anchor being there only to hold a `title`.
+ *
+ * So what the list contains decides. A menu of links collapses. A list holding no
+ * link is content and stays open. A list that cannot be asked is treated as a menu,
+ * which keeps the three existing groups working.
+ */
+const isLinkMenu = (list) => {
+  if (typeof list.querySelectorAll !== 'function') return true;
+  return list.querySelectorAll('a').length > 0;
+};
+
 export const footerGroups = (children) => {
   const groups = [];
   children.forEach((child, index) => {
     if (!HEADING.test(child.tagName)) return;
     const next = children[index + 1];
-    if (next && LIST.test(next.tagName)) groups.push([index, index + 1]);
+    if (next && LIST.test(next.tagName) && isLinkMenu(next)) groups.push([index, index + 1]);
   });
   return groups;
 };
