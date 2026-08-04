@@ -2,8 +2,13 @@ import { getMetadata } from '../../scripts/aem.js';
 import markNavGroups from './nav-groups.js';
 import { loadFragment } from '../fragment/fragment.js';
 
-// media query match that indicates mobile/tablet width
-const isDesktop = window.matchMedia('(min-width: 900px)');
+// Live swaps its burger for the full nav at 1280, pinned in a browser on live's
+// /en-gb/fiji-airways: .menu-nav__openButton computes display:flex at 1279 with no
+// top-level item visible, and display:none at 1280. It is still a burger at 1210.
+// The boilerplate's 900 showed our desktop nav across 380px of width where live
+// shows a burger. 1280 is also --content-cap-breakpoint, so the header and the
+// content column step together.
+const isDesktop = window.matchMedia('(min-width: 1280px)');
 
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
