@@ -600,6 +600,21 @@ main .section.highlight {
    The crumbs carry no links: all 45 distinct /en and /en-gb crumb targets answer 404 on live. Live
    writes its divider as an aria-hidden span, and a generated ::after says the same to a reader while
    staying out of the accessibility tree. */
+
+/* Live hides the trail below 992 and shows it above: its own rule is
+   `.breadcrumbs{display:none}` with `@media(min-width:992px){.breadcrumbs{display:flex}}`. A browser
+   read agrees, display none with 0 of 5 items visible at 412 and flex with 5 visible at 1000. Ours
+   wrapped to four lines and 91px at 412, which live never shows. */
+.breadcrumb {
+  display: none;
+}
+
+@media (width >= 992px) {
+  .breadcrumb {
+    display: block;
+  }
+}
+
 .breadcrumb ol {
   display: flex;
   flex-wrap: wrap;

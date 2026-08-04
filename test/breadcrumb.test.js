@@ -111,17 +111,18 @@ describe('the breadcrumb styling', () => {
     assert.match(rule, /content:\s*"\s*\|\s*"/);
   });
 
-  // Live hides the trail below 992 and shows it above. Its own rule is
-  // `.breadcrumbs{display:none}` with `@media(min-width:992px){.breadcrumbs{display:flex}}`, and a
-  // browser read agrees: display none with 0 of 5 items visible at 412, flex with 5 visible and 53px
-  // tall at 1000. Ours wrapped to four lines and 91px at 412, which live never shows.
+  // Live hides the trail below 992 and shows it above. Its rule is
+  // `.breadcrumbs{display:none}` with `@media(min-width:992px){.breadcrumbs{display:flex}}`.
+  // A browser read agrees: display none with 0 of 5 items visible at 412, and flex with 5
+  // visible and 53px tall at 1000. Ours wrapped to four lines and 91px at 412.
   it('hides the trail below live\'s 992 and shows it above', () => {
     assert.match(css, /\.breadcrumb \{[\s\S]{0,120}display:\s*none/);
-    const at = css.indexOf('@media (width >= 992px)');
-    assert.ok(at > -1, 'a 992 query exists');
-    const shown = css.slice(at, at + 220);
-    assert.match(shown, /\.breadcrumb/);
-    assert.match(shown, /display:\s*block/);
+    // More than one 992 query exists, so look for the block carrying the rule rather than the
+    // first one in the file.
+    const blocks = css.split('@media (width >= 992px)').slice(1);
+    assert.ok(blocks.length, 'a 992 query exists');
+    const shown = blocks.filter((b) => /^[^@]{0,200}\.breadcrumb \{[^}]*display:\s*block/.test(b));
+    assert.equal(shown.length, 1, 'exactly one 992 block shows the trail');
   });
 
   it('lays the trail out in a row with no bullets', () => {
