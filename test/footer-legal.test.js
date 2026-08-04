@@ -86,8 +86,11 @@ describe('the legal row styling', () => {
     assert.match(css, /\.footer-legal[\s\S]{0,400}font-size:\s*14px/);
   });
 
-  it('sets live\'s 12px on the copyright', () => {
-    assert.match(css, /\.footer-legal-copy\s*\{[\s\S]*?font-size:\s*12px/);
+  // The first version of this rule was `.footer-legal-copy`, (0,2,1) against the row's
+  // (0,2,2), so the copyright rendered at 14px while this assertion passed. A text match
+  // cannot see a cascade, so the selector has to out-specify the row on its own terms.
+  it('sets live\'s 12px on the copyright, from a selector that outranks the row', () => {
+    assert.match(css, /p\.footer-legal-copy\s*\{[\s\S]*?font-size:\s*12px/);
   });
 
   it('divides the links with a logical border, which flips for Arabic', () => {

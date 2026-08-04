@@ -122,7 +122,10 @@ footer .footer .footer-legal p a:last-child {
   border-inline-end: none;
 }
 
-footer .footer .footer-legal-copy {
+/* p.footer-legal-copy, not .footer-legal-copy: the row rule above is (0,2,2) and a
+   class alone is (0,2,1), so the copyright rendered at the row's 14px. Read in a
+   browser on the branch preview at 1440, where a text-matching test passed. */
+footer .footer .footer-legal p.footer-legal-copy {
   padding-top: 8px;
   font-size: 12px;
 }
