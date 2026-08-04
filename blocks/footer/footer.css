@@ -11,7 +11,16 @@ footer {
 footer .footer > div {
   margin: auto;
   max-width: var(--content-max-width);
-  padding: 40px 24px 24px;
+
+  /* Live's band is `padding-block: 1.5rem` with no breakpoint, and a browser read agrees at 800 and
+     1440 alike: 24px top and 24px bottom. The 40px top was the aem-boilerplate's default.
+
+     The horizontal inset stays at 24. Live's `.footer` has none of its own and the content inset comes
+     from inner containers that differ per row, "About us" at left 20 and "Payment Methods" at 40 when
+     read at 800, so there is no single live number to copy and 24 sits inside that range. Above the
+     content cap the inset does not move anything anyway, because max-width binds the content box. */
+  padding-block: 24px;
+  padding-inline: 24px;
 }
 
 footer .footer p {
@@ -82,12 +91,6 @@ footer .footer a:hover {
 
 .footer-group-list li {
   font-size: var(--body-font-size-s);
-}
-
-@media (width >= 900px) {
-  footer .footer > div {
-    padding: 40px 32px 24px;
-  }
 }
 
 /* Live closes the footer with a centred row of legal links and a copyright line.

@@ -107,13 +107,13 @@ describe('the legal row styling', () => {
   });
 });
 
-// Live's footer band is `padding-block: 1.5rem` with no breakpoint, and a browser read agrees at both
-// 800 and 1440: 24px top and 24px bottom on `.footer`. Ours was the aem-boilerplate's 40px top and
-// 24px bottom, which is a default rather than a measured value.
+// Live's footer band is `padding-block: 1.5rem` with no breakpoint, and a browser read agrees at
+// both 800 and 1440: 24px top and 24px bottom on `.footer`. Ours was the boilerplate's 40px top,
+// which is a default rather than a measured value.
 //
-// The horizontal inset is left alone. Live's `.footer` has none, and its content inset comes from inner
-// containers that differ per row: at 800 "About us" sits at left 20 and "Payment Methods" at 40, so
-// there is no single live number to copy and our 24 sits inside that range.
+// The horizontal inset is left alone. Live's `.footer` has none, and its content inset comes from
+// inner containers that differ per row: at 800 "About us" sits at left 20 and "Payment Methods" at
+// 40, so there is no single live number to copy and our 24 sits inside that range.
 describe('the footer band padding', () => {
   const inner = /footer \.footer > div \{[\s\S]*?\}/.exec(css);
 
