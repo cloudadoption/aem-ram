@@ -110,3 +110,30 @@ describe('the breadcrumb styling', () => {
     assert.match(rule, /display:\s*flex/);
   });
 });
+
+const scripts = readFileSync(new URL('../scripts/scripts.js', import.meta.url), 'utf8');
+const between = (from, to) => {
+  const a = scripts.indexOf(from);
+  const b = scripts.indexOf(to, a);
+  return a > -1 && b > -1 ? scripts.slice(a, b) : '';
+};
+
+// The first version called this from buildAutoBlocks, which loadFragment also runs: fragment.js
+// calls decorateMain on the header and the footer fragment, so the trail was built three times and
+// the header's own copy landed inside the header band with class "section nav-brand", at top 0 with
+// the header's grid on it. Read on the branch preview. It belongs where the page's own main is named.
+describe('where the breadcrumb is built', () => {
+  it('runs from loadEager, on the page own main', () => {
+    assert.match(between('async function loadEager', 'try {'), /buildBreadcrumb\(main/);
+  });
+
+  it('does not run from buildAutoBlocks, which fragments also reach', () => {
+    assert.doesNotMatch(between('function buildAutoBlocks', 'function decorateMain'), /buildBreadcrumb/);
+  });
+
+  // It prepends a section, so decorateSections has to see it.
+  it('runs before decorateMain', () => {
+    const eager = between('async function loadEager', 'try {');
+    assert.ok(eager.indexOf('buildBreadcrumb') < eager.indexOf('decorateMain(main)'));
+  });
+});
