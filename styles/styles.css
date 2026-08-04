@@ -240,6 +240,11 @@ li {
    white, so the six small cards on checked-baggage read as no boxes at all. */
 main {
   background-color: var(--ram-background-alternative-color);
+
+  /* Live's section boundaries add nothing of their own: the gap between two sections is the
+     content region's own .f-pt-24 and .f-pb-24. So the top of the page is 24 and every
+     boundary is 24, where the boilerplate had 40 at each boundary and 0 at the top. */
+  padding-block: 24px;
 }
 
 main > div {
@@ -402,7 +407,7 @@ main img {
 
 /* sections */
 main > .section {
-  margin: 40px 0;
+  margin: 24px 0;
 }
 
 main > .section > div {
@@ -428,8 +433,19 @@ main > .section > div {
   }
 }
 
+/* main's padding makes the top end, so the first section's own margin comes off or it adds to it.
+
+   The bottom end reads 48 rather than 24, and this is measured and not matched: every page carries
+   a trailing section with no height, the one the metadata block leaves behind, so :last-child
+   matches that empty one and the last section a reader sees keeps its 24 on top of main's 24 of
+   padding. Zeroing the bottom margin on all of them moves the problem, because the empty section
+   still contributes its own top margin. */
 main > .section:first-of-type {
   margin-top: 0;
+}
+
+main > .section:last-child {
+  margin-block-end: 0;
 }
 
 

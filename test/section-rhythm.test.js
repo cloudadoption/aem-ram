@@ -4,9 +4,9 @@ import { describe, it } from 'node:test';
 
 const styles = readFileSync(new URL('../styles/styles.css', import.meta.url), 'utf8');
 
-// Live's section boundaries add nothing of their own: the space between two sections is the content
-// region's own `.f-pt-24` and `.f-pb-24`, so 24px. Ours read a flat 40 at every boundary and 0 above
-// the first block, which made the whole estate looser than live and started the page too high.
+// Live's section boundaries add nothing of their own: the space between two sections is the
+// content region's own `.f-pt-24` and `.f-pb-24`, so 24px. Ours read a flat 40 at every boundary
+// and 0 above the first block, which made the estate looser than live and started it too high.
 // Ported from da-ram #64, which measured gaps of 24 to 26 and 24 above the first section against
 // live's.
 describe('the section rhythm', () => {
@@ -29,11 +29,11 @@ describe('the section rhythm', () => {
   });
 
   // KNOWN AND NOT MATCHED: under the last section a reader sees, this reads 48 against live's 24.
-  // Every page carries a trailing section with no height, the one the metadata block leaves behind,
-  // so :last-child matches that empty one and the last visible section keeps its 24 on top of main's
-  // 24 of padding. Zeroing the bottom margin on all of them moves the problem, because the empty
-  // section still contributes its own top margin.
-  it('takes the last section\'s bottom margin off, which the trailing empty section still defeats', () => {
+  // Every page carries a trailing section with no height, the one the metadata block leaves
+  // behind, so :last-child matches that empty one and the last visible section keeps its 24 on
+  // top of main's 24 of padding. Zeroing the bottom margin on all of them moves the problem,
+  // because the empty section still contributes its own top margin.
+  it('takes the last section\'s bottom margin off, which the empty one still defeats', () => {
     assert.match(styles, /^main > \.section:last-child\s*\{[^}]*margin-block-end:\s*0/m);
   });
 });
