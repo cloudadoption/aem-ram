@@ -32,6 +32,93 @@
   margin: 16px;
 }
 
+/* Live sizes and colours a card title by what the card holds, and the two components carrying 14 of
+   the 22 templates with a titled card fall on opposite sides of the icon and photo split. Without
+   these rules the title takes the document type scale, so its size depends on the heading level the
+   transform found on live: the icon card reads 24px by luck and the photo card 28px against live's
+   16. A card with no image is deliberately left on the type scale, because over those 11 templates
+   16px, 22.4px and 17.6px tie at 3 templates each and a value here would be a coin flip. */
+.cards > ul > li :is(h1, h2, h3, h4, h5, h6) {
+  /* A card is padded and gapped rather than spaced by its heading's margin. The 20px every heading
+     carries escaped the card body and made the icon card 112px against live's 106. */
+  margin: 0;
+
+  /* The row carries the chevron below at its trailing edge. */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 24px at weight 700 is what a card title measures on live wherever the card is not a link-card:
+   small-card reads it on all 8 of its templates.
+
+   Keyed on the card HAVING AN IMAGE rather than on a card-kind class, which is the shape this repo
+   needs and da-ram's own rule does not use. cards.js writes .cards-card-image during decoration, so
+   the selector matches before the network. The kind classes cannot carry this: the icon is the
+   default here and .cards-card-icon is never added at all, while .cards-card-photo arrives from the
+   declared width. Sizing a title from a class that lands on image load cost 0.1432 of a 0.1591 CLS
+   on checked-baggage, which is what test/cards.test.js guards. */
+.cards > ul > li:has(.cards-card-image) :is(h1, h2, h3, h4, h5, h6) {
+  font-size: var(--heading-font-size-m);
+  font-weight: 700;
+}
+
+/* The link-card is the exception, and an exact one: 16px at weight 400 stepping to 20px at 1280,
+   matching live at 900, 1100 and 1440 on /en-gb/add-extra-luggage. The transform marks that block
+   `cover`, because no cards block mixes the two. */
+.cards.cover > ul > li :is(h1, h2, h3, h4, h5, h6) {
+  font-size: var(--heading-font-size-xs);
+  font-weight: 400;
+}
+
+@media (width >= 1280px) {
+  .cards.cover > ul > li :is(h1, h2, h3, h4, h5, h6) {
+    font-size: var(--heading-font-size-s);
+  }
+}
+
+/* Live declares the title's colour, `.small-card__title{color:var(--ram-text-dark-color)}`. Over
+   eight en-GB card pages at 1440, small-card reads #1a1717 on 11 titles, baggage-card #000 on 4 and
+   ram-card #333 on 3, against the link-card's brand red on 3. The title is an anchor here, so it
+   took --link-color and drew red on each. The link-card keeps the red, which is the same split the
+   sizes above make. */
+.cards:not(.cover) > ul > li :is(h1, h2, h3, h4, h5, h6) a {
+  color: var(--ram-text-dark-color);
+}
+
+/* Live puts a chevron at the card's trailing edge, on the title's line: i.small-card__arrow at 24px
+   in the brand red, a 25x24 box 16px from the trailing edge, identical on /en-gb/checked-baggage,
+   /en-gb/baggage-information and /en-gb/add-extra-luggage. 18 of the 23 card titles read across
+   eight en-GB pages carry one, and the 5 without are the cards with no image, so it follows the
+   same split.
+
+   The glyph is in the client's ram-icons font, which this repository does not load, so it is drawn:
+   an 8px square with two 2px edges, turned 45deg. The card's own 16px of padding puts it where
+   live's sits. :has(a) is the guard, because a chevron on a card that links nowhere tells the
+   reader they can go somewhere. */
+.cards > ul > li:has(.cards-card-image) :is(h1, h2, h3, h4, h5, h6):has(a)::after {
+  content: '';
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-inline-start: auto;
+  border-block-start: 2px solid var(--link-color);
+  border-inline-end: 2px solid var(--link-color);
+  transform: rotate(45deg);
+}
+
+/* transform is physical, so the reading direction needs its own angle. The logical borders already
+   move: under rtl border-inline-end is the left edge, so the strokes meet at the top left and the
+   apex points up and to the left. A quarter turn anticlockwise brings it to the left, and 135deg
+   takes it back to pointing right.
+
+   Live keeps ram-icon-chevron-right in Arabic with no transform, so its chevron points into the
+   text. That divergence is ram2's, recorded in its docs/divergences.md. */
+[dir="rtl"] .cards > ul > li:has(.cards-card-image) :is(h1, h2, h3, h4, h5, h6):has(a)::after {
+  transform: rotate(-45deg);
+}
+
 .cards .cards-card-image {
   line-height: 0;
 }
