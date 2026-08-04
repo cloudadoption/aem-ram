@@ -10,8 +10,10 @@ import {
   loadSections,
   loadCSS,
   buildBlock,
+  getMetadata,
 } from './aem.js';
 import { decorateImageRows } from './image-rows.js';
+import buildBreadcrumb from './breadcrumb.js';
 
 import { applyLocale } from './locale.js';
 import { isBareEmbedLink } from './embed-url.js';
@@ -187,6 +189,10 @@ async function loadEager(doc) {
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
+    // Not in buildAutoBlocks: fragment.js runs decorateMain on the header and the footer
+    // fragment too, so the trail was built three times and the header's copy landed in the band.
+    // Before decorateMain, because it prepends a section decorateSections has to see.
+    buildBreadcrumb(main, getMetadata('breadcrumb'));
     decorateMain(main);
     decorateImageRows(main, document);
     document.body.classList.add('appear');

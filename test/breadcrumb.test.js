@@ -1,0 +1,162 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { describe, it } from 'node:test';
+
+import { crumbLabels, breadcrumbHtml } from '../scripts/breadcrumb.js';
+
+// Live shows a breadcrumb on 1,366 of 1,506 captures, 91 per cent, and its styling is the same on
+// both themes apart from one size step. Measured in a browser on 2026-08-04, live's
+// /en-gb/american-airlines (2022) against /en-gb/fiji-airways (2025):
+//   link       14px / 16px, weight 400, rgb(89, 88, 85)
+//   divider    a "|" span, weight 600, rgb(123, 122, 120)
+//   last crumb weight 600, rgb(141, 43, 97), which is --ram-brand-primary-dark-color
+// So the trail carries across the theme split where the band around it does not: live's band is
+// 253px tall and transparent with a 50px uppercase Museo title on 2022, and 156px on #f7f7f7 with a
+// 40px mixed-case title on 2025.
+//
+// THE CRUMBS CARRY NO LINKS. Live's own do, and all 45 distinct /en and /en-gb crumb targets answer
+// 404 on live, following redirects, while two control URLs answer 200 through the same probe. That
+// is PENDING DECISION 12: the labels ship, the hrefs wait.
+
+describe('crumbLabels', () => {
+  it('splits live\'s own separator', () => {
+    assert.deepEqual(
+      crumbLabels('Safar Flyer Loyalty | Earn and spend miles | Our Partners | AMERICAN AIRLINES'),
+      ['Safar Flyer Loyalty', 'Earn and spend miles', 'Our Partners', 'AMERICAN AIRLINES'],
+    );
+  });
+
+  it('trims each label', () => {
+    assert.deepEqual(crumbLabels('  A  |B |  C  '), ['A', 'B', 'C']);
+  });
+
+  it('drops an empty segment rather than rendering a stray divider', () => {
+    assert.deepEqual(crumbLabels('A || B |'), ['A', 'B']);
+  });
+
+  it('returns nothing for nothing', () => {
+    assert.deepEqual(crumbLabels(''), []);
+    assert.deepEqual(crumbLabels(undefined), []);
+    assert.deepEqual(crumbLabels(null), []);
+  });
+
+  // A single crumb is the page itself and says nothing new. Live never renders a one-item
+  // trail: its shortest is three.
+  it('drops a trail of one', () => {
+    assert.deepEqual(crumbLabels('AMERICAN AIRLINES'), []);
+  });
+});
+
+describe('breadcrumbHtml', () => {
+  const LABELS = ['Safar Flyer Loyalty', 'Earn and spend miles', 'AMERICAN AIRLINES'];
+
+  it('writes a labelled nav so a screen reader can skip it', () => {
+    const html = breadcrumbHtml(LABELS);
+    assert.match(html, /<nav[^>]*class="breadcrumb"/);
+    assert.match(html, /aria-label="Breadcrumb"/);
+  });
+
+  it('writes one list item per label, in order', () => {
+    const html = breadcrumbHtml(LABELS);
+    const items = [...html.matchAll(/<li[^>]*>([^<]*)</g)].map((m) => m[1].trim());
+    assert.deepEqual(items, LABELS);
+  });
+
+  it('marks the last crumb as the current page', () => {
+    const html = breadcrumbHtml(LABELS);
+    const last = html.slice(html.lastIndexOf('<li'));
+    assert.match(last, /aria-current="page"/);
+    assert.equal(html.match(/aria-current/g).length, 1);
+  });
+
+  it('carries no anchor, because live\'s crumb targets 404 on live', () => {
+    assert.doesNotMatch(breadcrumbHtml(LABELS), /<a\b/);
+  });
+
+  it('escapes a label', () => {
+    assert.match(breadcrumbHtml(['A & B', 'C <script>', 'D']), /A &amp; B/);
+    assert.doesNotMatch(breadcrumbHtml(['A', '<script>x</script>', 'D']), /<script>/);
+  });
+
+  it('writes nothing at all for an empty trail', () => {
+    assert.equal(breadcrumbHtml([]), '');
+  });
+});
+
+const css = readFileSync(new URL('../styles/styles.css', import.meta.url), 'utf8');
+
+describe('the breadcrumb styling', () => {
+  it('takes live\'s measured link colour', () => {
+    assert.match(css, /\.breadcrumb[\s\S]{0,400}#595855/i);
+  });
+
+  // styles.css declares `p, li { font-weight: 300 }`, and a direct rule beats a value inherited
+  // from the ol, so the weight has to sit on the li. Read on the branch preview, where the first
+  // crumb computed 300 against live's 400 while the ol rule said 400.
+  it('sets live\'s weight 400 on the item, not on the list', () => {
+    assert.match(css, /\.breadcrumb li \{[\s\S]{0,160}font-weight:\s*400/);
+  });
+
+  it('gives the current page live\'s weight and its own token colour', () => {
+    const rule = css.slice(css.indexOf('.breadcrumb'));
+    assert.match(rule, /aria-current[\s\S]{0,200}font-weight:\s*600/);
+    assert.match(rule, /aria-current[\s\S]{0,200}--ram-brand-primary-dark-color/);
+  });
+
+  // Live writes the divider as an aria-hidden span; a generated ::after says the same thing to a
+  // reader and keeps it out of the accessibility tree by construction.
+  it('draws the divider between items and not after the last', () => {
+    const rule = css.slice(css.indexOf('.breadcrumb'));
+    assert.match(rule, /li:not\(:last-child\)::after/);
+    assert.match(rule, /content:\s*"\s*\|\s*"/);
+  });
+
+  // Live hides the trail below 992 and shows it above. Its rule is
+  // `.breadcrumbs{display:none}` with `@media(min-width:992px){.breadcrumbs{display:flex}}`.
+  // A browser read agrees: display none with 0 of 5 items visible at 412, and flex with 5
+  // visible and 53px tall at 1000. Ours wrapped to four lines and 91px at 412.
+  it('hides the trail below live\'s 992 and shows it above', () => {
+    assert.match(css, /\.breadcrumb \{[\s\S]{0,120}display:\s*none/);
+    // More than one 992 query exists, so look for the block carrying the rule rather than the
+    // first one in the file.
+    const blocks = css.split('@media (width >= 992px)').slice(1);
+    assert.ok(blocks.length, 'a 992 query exists');
+    const shown = blocks.filter((b) => /^[^@]{0,200}\.breadcrumb \{[^}]*display:\s*block/.test(b));
+    assert.equal(shown.length, 1, 'exactly one 992 block shows the trail');
+  });
+
+  it('lays the trail out in a row with no bullets', () => {
+    const rule = css.slice(css.indexOf('.breadcrumb'));
+    assert.match(rule, /list-style:\s*none/);
+    assert.match(rule, /display:\s*flex/);
+  });
+});
+
+const scripts = readFileSync(new URL('../scripts/scripts.js', import.meta.url), 'utf8');
+const between = (from, to) => {
+  const a = scripts.indexOf(from);
+  const b = scripts.indexOf(to, a);
+  return a > -1 && b > -1 ? scripts.slice(a, b) : '';
+};
+
+// The first version called this from buildAutoBlocks, which loadFragment also runs: fragment.js
+// calls decorateMain on the header and the footer fragment, so the trail was built three times and
+// the header's own copy landed inside the header band with class "section nav-brand", at top 0
+// with the header's grid on it. Read on the branch preview. It belongs where the page main is
+// named.
+describe('where the breadcrumb is built', () => {
+  it('runs from loadEager, on the page own main', () => {
+    assert.match(between('async function loadEager', 'try {'), /buildBreadcrumb\(main/);
+  });
+
+  it('does not run from buildAutoBlocks, which fragments also reach', () => {
+    const autoBlocks = between('function buildAutoBlocks', 'function decorateMain');
+    assert.doesNotMatch(autoBlocks, /buildBreadcrumb/);
+  });
+
+  // It prepends a section, so decorateSections has to see it.
+  it('runs before decorateMain', () => {
+    const eager = between('async function loadEager', 'try {');
+    assert.ok(eager.indexOf('buildBreadcrumb') < eager.indexOf('decorateMain(main)'));
+  });
+});

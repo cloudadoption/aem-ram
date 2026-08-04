@@ -590,3 +590,55 @@ main .section.highlight {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* Live shows a breadcrumb on 1,366 of 1,506 captures, and its styling carries across the theme split
+   where the band around it does not. Measured in a browser on live's /en-gb/american-airlines (2022)
+   against /en-gb/fiji-airways (2025): link weight 400 in rgb(89, 88, 85), a "|" divider at weight 600
+   in rgb(123, 122, 120), and the last crumb at weight 600 in rgb(141, 43, 97), which is this repo's
+   --ram-brand-primary-dark-color. Only the size differs, 14px on 2022 and 16px on 2025.
+
+   The crumbs carry no links: all 45 distinct /en and /en-gb crumb targets answer 404 on live. Live
+   writes its divider as an aria-hidden span, and a generated ::after says the same to a reader while
+   staying out of the accessibility tree. */
+
+/* Live hides the trail below 992 and shows it above: its own rule is
+   `.breadcrumbs{display:none}` with `@media(min-width:992px){.breadcrumbs{display:flex}}`. A browser
+   read agrees, display none with 0 of 5 items visible at 412 and flex with 5 visible at 1000. Ours
+   wrapped to four lines and 91px at 412, which live never shows. */
+.breadcrumb {
+  display: none;
+}
+
+@media (width >= 992px) {
+  .breadcrumb {
+    display: block;
+  }
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #595855;
+  font-size: var(--body-font-size-m);
+}
+
+/* On the item rather than the list: this file declares `p, li { font-weight: 300 }` and a direct
+   rule beats a value inherited from the ol, so the first crumb computed 300 against live's 400. */
+main .breadcrumb li {
+  font-weight: 400;
+}
+
+.breadcrumb li:not(:last-child)::after {
+  content: " | ";
+  color: #7b7a78;
+  font-weight: 600;
+  white-space: pre;
+}
+
+.breadcrumb li[aria-current="page"] {
+  color: var(--ram-brand-primary-dark-color);
+  font-weight: 600;
+}
