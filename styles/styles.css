@@ -128,10 +128,17 @@ h3,
 h4,
 h5,
 h6 {
-  margin-top: 0.8em;
+  /* Live declares its headings flat, `body h1..h6{margin:0;padding:0}`, and its authors add the
+     gap under one back where they want it. Across five 2025-theme pages and 39 headings that is
+     0 above every one. This read `margin-top: 0.8em`, computing to 32px at a 40px heading and 16
+     at 20, and it collapses out of a section with no padding of its own, which is why the space
+     above the first section measured 50 where live has 24.
 
-  /* The gap under a heading measures 15 to 24px across four live pages. */
-  margin-bottom: 20px;
+     The 20px below stays, and it is a decision-0024 choice rather than a match. Zeroing it makes
+     the page tighter than live looks: live's air under a prose heading comes from a <br> and from
+     portlet wrappers carrying 20px, neither of which the transform keeps, and live's own prose
+     blocks read 0/0, 0/4 and 0/20 with no value dominating. */
+  margin: 0 0 20px;
   font-family: var(--heading-font-family);
   font-weight: 500;
   line-height: 1.2;
