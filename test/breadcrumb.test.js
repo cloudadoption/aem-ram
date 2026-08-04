@@ -40,8 +40,8 @@ describe('crumbLabels', () => {
     assert.deepEqual(crumbLabels(null), []);
   });
 
-  // A single crumb is the page itself, which says nothing a reader does not already know. Live never
-  // renders a one-item trail: its shortest is three.
+  // A single crumb is the page itself and says nothing new. Live never renders a one-item
+  // trail: its shortest is three.
   it('drops a trail of one', () => {
     assert.deepEqual(crumbLabels('AMERICAN AIRLINES'), []);
   });

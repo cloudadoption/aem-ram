@@ -10,8 +10,10 @@ import {
   loadSections,
   loadCSS,
   buildBlock,
+  getMetadata,
 } from './aem.js';
 import { decorateImageRows } from './image-rows.js';
+import buildBreadcrumb from './breadcrumb.js';
 
 import { applyLocale } from './locale.js';
 import { isBareEmbedLink } from './embed-url.js';
@@ -118,6 +120,7 @@ function buildAutoBlocks(main) {
         });
       });
     }
+    buildBreadcrumb(main, getMetadata('breadcrumb'));
     buildWidgetAutoBlocks(main);
     buildEmbedAutoBlocks(main);
   } catch (error) {
