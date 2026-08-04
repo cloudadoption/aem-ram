@@ -51,7 +51,7 @@
   /* fonts */
   --body-font-family: ram-primary-font, ram-primary-font-fallback, sans-serif;
   --heading-font-family: ram-primary-font, ram-primary-font-fallback, sans-serif;
-  --secondary-font-family: ram-secondary-font, ram-primary-font-fallback, sans-serif;
+  --secondary-font-family: ram-secondary-font, ram-secondary-font-fallback, sans-serif;
 
   /* body sizes, measured on live article pages and flat across viewports */
   --body-font-size-m: 16px;
@@ -102,6 +102,25 @@
 @font-face {
   font-family: ram-primary-font-fallback;
   size-adjust: 102%;
+  src: local('Arial');
+}
+
+/* The h1 asks for ram-secondary-font, which is Museo, and fell back to the face above,
+   whose 102% was swept against Museo SANS. Against Museo that reads 0.959 on "Fiji
+   Airways", 0.969 on the long American Airlines title, 0.963 on "Conditions
+   générales", 0.970 on the Arabic checked-baggage title and 0.947 on "Ödeme
+   yöntemleri". So the h1 drew 3 to 5 per cent narrow and widened when Museo arrived,
+   and a title near a wrap boundary flips a line and moves the page below it. fonts.css
+   is deferred below 900px, so on mobile the swap lands late, which is where it costs
+   most.
+
+   Swept the same way the 102% was: 105% gives a mean of 0.9947, 105.5% gives 0.9993,
+   106% overshoots to 1.0041. Cyrillic is excluded from the mean, reading 1.117: Museo
+   has no Cyrillic, so neither side draws it and the ratio compares two per-glyph
+   fallbacks. */
+@font-face {
+  font-family: ram-secondary-font-fallback;
+  size-adjust: 105.5%;
   src: local('Arial');
 }
 
