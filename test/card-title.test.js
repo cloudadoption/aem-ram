@@ -15,9 +15,12 @@ const declared = css.replace(/\/\*[\s\S]*?\*\//g, '');
 // live's 16. The colour went the same way: the title is an anchor, so it took --link-color and drew
 // the brand red where live declares `.small-card__title{color:var(--ram-text-dark-color)}`.
 describe('a card title', () => {
-  it('reads 24px at 700 on the icon and photo cards, as live does', () => {
-    const sel = '\\.cards > ul > li:is\\(\\.cards-card-icon, \\.cards-card-photo\\)';
-    const rule = new RegExp(`${sel}\\s+:is\\(h1[^{]*\\{[^}]*\\}`).exec(declared);
+  // Keyed on the card having an image, not on a card-kind class: the icon is the default here and
+  // .cards-card-icon is never added at all, while .cards-card-photo lands on image load. cards.js
+  // writes .cards-card-image during decoration, so this matches before the network.
+  it('reads 24px at 700 on a card with an image, as live does', () => {
+    const sel = '\\.cards > ul > li:has\\(\\.cards-card-image\\)';
+    const rule = new RegExp(`${sel} :is\\(h1[^{]*\\{[^}]*\\}`).exec(declared);
     assert.ok(rule, 'expected a rule sizing the icon and photo card titles');
     assert.match(rule[0], /font-size:\s*var\(--heading-font-size-m\)/);
     assert.match(rule[0], /font-weight:\s*700/);
