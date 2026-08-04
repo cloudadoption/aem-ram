@@ -33,7 +33,9 @@ describe('the header content box', () => {
   });
 
   it('pins the width and drops the inset at the section cap, as the section does', () => {
-    const capped = (declarations.match(/@media \(width >= 1280px\) \{[\s\S]*?\n\}\n\}/g) || []).join('\n');
+    const at = declarations.indexOf('@media (width >= 1280px)');
+    assert.ok(at > -1, 'a 1280 query exists');
+    const capped = declarations.slice(at, at + 280);
     assert.match(capped, /header nav/);
     assert.match(capped, /width:\s*var\(--content-max-width\)/);
     assert.match(capped, /padding-inline:\s*0/);

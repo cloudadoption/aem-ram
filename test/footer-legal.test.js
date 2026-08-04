@@ -4,18 +4,19 @@ import { describe, it } from 'node:test';
 
 import { markLegalRow } from '../blocks/footer/footer-legal.js';
 
-// Live closes its footer with a centred row of legal links and a copyright line, and this footer had
-// neither until the row was authored into the ten footer documents. Live's own rules, read off
-// /o/ram-airways-theme/2025/css/styles.css on 2026-08-04:
-//   .footer__webmap li{border-inline-end:1px solid var(--ram-text-inverse-color);padding-inline-end:.5rem}
+// Live closes its footer with a centred row of legal links and a copyright line.
+// This footer had neither until the row was authored into the ten footer documents.
+// Live's own rules, read off /o/ram-airways-theme/2025/css/styles.css on 2026-08-04:
+//   .footer__webmap li{border-inline-end:1px solid var(--ram-text-inverse-color);
+//                      padding-inline-end:.5rem}
 //   .footer__webmap li:last-child{border-inline-end:none}
 //   .f-body-m{font-size:.875rem;line-height:1.25rem}   .f-fw-l{font-weight:300}
-// So the divider between the links is a border rather than a pipe character, and it is logical, which
-// is what flips it for the RTL locale. Measured in a browser on live: links 14px weight 300, copyright
-// 12px weight 300, both white on #1a1717.
+// So the divider is a border rather than a pipe character, and it is logical, which
+// is what flips it for ar-sa. Measured in a browser on live: links 14px weight 300,
+// copyright 12px weight 300, both white on #1a1717.
 //
-// The row is marked from the © rather than by position. The alternative was a `:last-child` selector on
-// the section, which is true today only because the tool appends this row last.
+// The row is marked from its © rather than by position. A :last-child selector on
+// the section would be true only because the tool appends this row last.
 
 const el = (tag, text = '', children = []) => {
   const node = {

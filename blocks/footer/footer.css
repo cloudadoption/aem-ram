@@ -89,3 +89,40 @@ footer .footer a:hover {
     padding: 40px 32px 24px;
   }
 }
+
+/* Live closes the footer with a centred row of legal links and a copyright line.
+   Its own rules, from /o/ram-airways-theme/2025/css/styles.css:
+     .footer__webmap li{border-inline-end:1px solid var(--ram-text-inverse-color);
+                        padding-inline-end:.5rem}
+     .footer__webmap li:last-child{border-inline-end:none}
+     .f-body-m{font-size:.875rem;line-height:1.25rem}   .f-fw-l{font-weight:300}
+   So the divider is a border rather than a pipe, and it is logical, which is what
+   flips it for ar-sa. Measured in a browser on live: links 14px weight 300,
+   copyright 12px weight 300, both white on #1a1717.
+
+   Our row is anchors in a paragraph rather than live's ul, so the border sits on
+   the anchor. Same result, and it needs no list in the document: a list would sit
+   one step away from the accordion shape markFooterGroups collapses. */
+footer .footer .footer-legal p {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.25rem;
+}
+
+footer .footer .footer-legal p a:any-link {
+  border-inline-end: 1px solid var(--ram-text-inverse-color, #fff);
+  padding-inline: 0.5rem;
+}
+
+footer .footer .footer-legal p a:last-child {
+  border-inline-end: none;
+}
+
+footer .footer .footer-legal-copy {
+  padding-top: 8px;
+  font-size: 12px;
+}

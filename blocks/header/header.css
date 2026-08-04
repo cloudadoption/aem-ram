@@ -15,9 +15,22 @@ header nav {
   align-items: center;
   gap: 0 24px;
   margin: auto;
-  max-width: 1248px;
+
+  /* Live puts the logo on the content column's left edge. Measured on live's
+     /en-gb/fiji-airways at 1440: the logo, the breadcrumb, the page title and the
+     first paragraph all start at 100, and live's .container is 1240 wide with
+     max-width 1240px, which is this repo's --content-max-width.
+
+     The nav used to carry its own geometry, 1248px with a 24px inset below 900 and
+     1264px with 32px above, against the section's 90%/1240px with 13.5px. That put
+     our logo at 120 and our content at 100, and the offset is never zero above
+     375px. These three declarations are the section's own, from
+     styles/styles.css `main > .section > div`. */
+  width: var(--content-width);
+  max-width: var(--content-max-width);
   height: var(--nav-height);
-  padding: 0 24px;
+  padding: 0;
+  padding-inline: 13.5px;
   font-family: var(--body-font-family);
 }
 
@@ -39,8 +52,6 @@ header nav[aria-expanded='true'] {
     display: flex;
     justify-content: space-between;
     gap: 0 32px;
-    max-width: 1264px;
-    padding: 0 32px;
   }
 
   header nav[aria-expanded='true'] {
@@ -321,5 +332,14 @@ header nav .nav-tools {
   .nav-brand a:any-link {
     width: 108px;
     height: 80px;
+  }
+}
+
+/* The section pins its width and drops its inset at --content-cap-breakpoint, so
+   the nav follows it there rather than keeping a 90% box the section no longer has. */
+@media (width >= 1280px) {
+  header nav {
+    width: var(--content-max-width);
+    padding-inline: 0;
   }
 }
