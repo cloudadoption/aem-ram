@@ -87,3 +87,47 @@ describe('the size-adjusted fallback face', () => {
     assert.match(face, /src:\s*local\(/);
   });
 });
+
+// 47 generated documents carry an <em> or an <i>, 103 runs in all, spread evenly across the ten
+// locales. Every one of our 11 @font-face blocks declares `font-style: normal`, so the browser
+// synthesises an oblique by shearing the upright face.
+//
+// Live has real italics and only for the primary family: 6 italic faces in the 2025 sheet,
+// 9 in main62.css, 8 in ram-nr-2022.css, all `font-family: ram-primary-font`.
+// ram-secondary-font has none on either theme, so none is added here.
+//
+// The files load cross-origin the same way the upright faces already do. Probed 2026-08-04:
+// all five answer 200 with `content-type: font/woff2` and `access-control-allow-origin: *`,
+// 22,988 to 23,800 bytes each. No new licence answer beyond the one this file records.
+describe('the italic faces', () => {
+  const italics = fonts.match(/@font-face\s*\{[^}]*font-style:\s*italic[^}]*\}/g) || [];
+
+  it('declares one per weight live has', () => {
+    assert.equal(italics.length, 5);
+  });
+
+  it('covers live\'s weights 100, 300, 500, 700 and 900', () => {
+    const weights = italics
+      .map((f) => /font-weight:\s*(\d+)/.exec(f)?.[1] ?? '')
+      .sort((a, b) => Number(a) - Number(b));
+    assert.deepEqual(weights, ['100', '300', '500', '700', '900']);
+  });
+
+  it('puts them on the primary family, which is the only one live gives italics', () => {
+    assert.ok(italics.every((f) => /font-family:\s*ram-primary-font/.test(f)));
+    assert.doesNotMatch(fonts, /font-family:\s*ram-secondary-font;[\s\S]{0,80}font-style:\s*italic/);
+  });
+
+  it('loads them from live, like the upright faces', () => {
+    assert.ok(italics.every((f) => /museosans_\d+_italic-webfont\.woff2/.test(f)));
+    assert.ok(italics.every((f) => f.includes('royalairmaroc.com/o/ram-airways-theme/2025/assets/fonts/')));
+  });
+
+  it('swaps rather than blocking, like the upright faces', () => {
+    assert.ok(italics.every((f) => /font-display:\s*swap/.test(f)));
+  });
+
+  it('leaves the upright faces alone', () => {
+    assert.equal((fonts.match(/font-style:\s*normal/g) || []).length, 11);
+  });
+});

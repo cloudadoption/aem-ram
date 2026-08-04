@@ -106,3 +106,56 @@
   font-display: swap;
   src: url('https://www.royalairmaroc.com/o/ram-airways-theme/2025/assets/fonts/museo900-regular-webfont.woff2') format('woff2');
 }
+
+/*
+ * Live has real italics, and only for the primary family: 6 italic faces in the 2025 sheet, 9 in
+ * main62.css and 8 in ram-nr-2022.css, every one `font-family: ram-primary-font`. ram-secondary-font
+ * has none on either theme, so none is declared here.
+ *
+ * 47 generated documents carry an <em> or an <i>, 103 runs in all, spread evenly across the ten
+ * locales. Without a face the browser shears the upright one.
+ *
+ * Probed 2026-08-04: all five files answer 200 with `content-type: font/woff2` and
+ * `access-control-allow-origin: *`, 22,988 to 23,800 bytes each, so they load cross-origin the same
+ * way the upright faces above already do and the licence note there covers them.
+ */
+
+@font-face {
+  font-family: ram-primary-font;
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url('https://www.royalairmaroc.com/o/ram-airways-theme/2025/assets/fonts/museosans_100_italic-webfont.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: ram-primary-font;
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://www.royalairmaroc.com/o/ram-airways-theme/2025/assets/fonts/museosans_300_italic-webfont.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: ram-primary-font;
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://www.royalairmaroc.com/o/ram-airways-theme/2025/assets/fonts/museosans_500_italic-webfont.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: ram-primary-font;
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://www.royalairmaroc.com/o/ram-airways-theme/2025/assets/fonts/museosans_700_italic-webfont.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: ram-primary-font;
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url('https://www.royalairmaroc.com/o/ram-airways-theme/2025/assets/fonts/museosans_900_italic-webfont.woff2') format('woff2');
+}
