@@ -23,8 +23,15 @@ footer .footer a:any-link {
   text-decoration: none;
 }
 
+/* Live colours a footer link on hover and does not underline it:
+   .footer__link:hover{color:var(--ram-text-primary-color);text-decoration:none}
+   and .footer__list__item:hover says the same. This underlined and stayed white.
+
+   Not measured in a browser: a JS-synthesised event does not fire CSS :hover, so a probe reads the
+   resting state on both sides and the difference looks like a match. Asserted from the stylesheet. */
 footer .footer a:hover {
-  text-decoration: underline;
+  color: var(--ram-text-primary-color);
+  text-decoration: none;
 }
 
 .footer-group-title {
@@ -32,7 +39,15 @@ footer .footer a:hover {
   padding: 12px 0;
   border-bottom: 1px solid rgb(255 255 255 / 20%);
   font-size: var(--body-font-size-m);
+
+  /* Live's h3.footer__menu__title is 16px on 22.4px, its .f-body-l declaring line-height 140%. This is
+     an h2, so it took the 1.2 the shared heading rule sets and read 19.2px.
+
+     Not measured in a rendered browser either: the footer loads from the document `metadata.json` maps
+     the locale to, and a draft page outside a locale gets no footer at all, so there is nothing to read
+     a computed style off locally. */
   font-weight: 400;
+  line-height: 1.4;
   cursor: pointer;
 }
 
