@@ -90,6 +90,13 @@ describe('the breadcrumb styling', () => {
     assert.match(css, /\.breadcrumb[\s\S]{0,400}#595855/i);
   });
 
+  // styles.css declares `p, li { font-weight: 300 }`, and a direct rule beats a value inherited
+  // from the ol, so the weight has to sit on the li. Read on the branch preview, where the first
+  // crumb computed 300 against live's 400 while the ol rule said 400.
+  it('sets live\'s weight 400 on the item, not on the list', () => {
+    assert.match(css, /\.breadcrumb li \{[\s\S]{0,160}font-weight:\s*400/);
+  });
+
   it('gives the current page live\'s weight and its own token colour', () => {
     const rule = css.slice(css.indexOf('.breadcrumb'));
     assert.match(rule, /aria-current[\s\S]{0,200}font-weight:\s*600/);

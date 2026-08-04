@@ -608,6 +608,11 @@ main .section.highlight {
   list-style: none;
   color: #595855;
   font-size: var(--body-font-size-m);
+}
+
+/* On the item rather than the list: this file declares `p, li { font-weight: 300 }` and a direct
+   rule beats a value inherited from the ol, so the first crumb computed 300 against live's 400. */
+main .breadcrumb li {
   font-weight: 400;
 }
 
