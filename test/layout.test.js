@@ -191,9 +191,21 @@ describe('the vertical rhythm', () => {
     assert.match(rule[0], /margin-bottom:\s*4px;/);
   });
 
-  it('gives a heading the measured 20px below it', () => {
+  // Live declares its headings flat, `body h1..h6{margin:0;padding:0}`, and its authors add the gap
+  // under one back where they want it. Across five 2025-theme pages and 39 headings that is 0 above
+  // every one. This carried `margin-top: 0.8em`, computing to 32px at a 40px heading and 16 at 20,
+  // and it collapses out of a section with no padding of its own, so the space above the first
+  // section measured 50 where live has 24.
+  //
+  // The 20px below stays as a decision-0024 choice rather than a match: live's air under a prose
+  // heading comes from a <br> and from portlet wrappers carrying 20px, neither of which the
+  // transform keeps, and live's own prose blocks read 0/0, 0/4 and 0/20 with no value dominating.
+  it('gives a heading the measured 20px below it and nothing above', () => {
     const headings = /h1,\s*h2,\s*h3,\s*h4,\s*h5,\s*h6\s*\{[\s\S]*?\n\}/.exec(styles)[0];
-    assert.match(headings, /margin-bottom:\s*20px;/);
+    assert.match(headings, /margin:\s*0 0 20px;/);
+    const declared = headings.replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.doesNotMatch(declared, /margin-top:/);
+    assert.doesNotMatch(declared, /0\.8em/);
   });
 
   it('indents a list by the measured 20px, not the browser default 40', () => {
