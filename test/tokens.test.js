@@ -33,8 +33,12 @@ describe('brand colour tokens', () => {
     assert.doesNotMatch(styles, /--link-color:\s*#3b63fb/);
   });
 
-  it('takes the link hover from the client dark brand token', () => {
-    assert.match(styles, /--link-hover-color:\s*var\(--ram-brand-primary-dark-color\)/);
+  // Corrected 2026-08-04 against the client's own stylesheet: `body a:hover`
+  // sets the colour to --ram-text-primary-color, which is the rest colour, so a
+  // link does not change on hover. The dark brand token is a button's active
+  // state. See test/link-states.test.js.
+  it('takes the link hover from the client link token, because live does not change it', () => {
+    assert.match(styles, /--link-hover-color:\s*var\(--ram-text-primary-color\)/);
     assert.doesNotMatch(styles, /--link-hover-color:\s*#1d3ecf/);
   });
 
