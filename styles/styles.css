@@ -413,6 +413,7 @@ main img {
 }
 
 /* sections */
+
 /* The whole gap is on the top, and the bottom end is main's padding alone. A bottom margin here
    made the page end 48px under the last ink against live's 24: the section kept its own 24 and
    main's padding added another, and the trailing childless section the pipeline leaves meant
