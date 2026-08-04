@@ -1,0 +1,53 @@
+/* Live's authors set a callout box inline, per page, and no two of the 25 templates that carry
+   one agree on the pixels. ram2's decision 0024 collapses them onto three variants and aligns
+   the rest onto the closest, which is a deliberate divergence.
+
+   The base is the outline shape without its border, being the commonest padding and radius
+   across the set. A box that arrives with no variant renders as this rather than unstyled. */
+.callout {
+  margin: 0 0 24px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #fff;
+
+  /* Live renders box copy at the size of the prose around it, 16px on 22.4px, measured on
+     .ram-advice-block and .ram-unified-box. --body-font-size-s is 14px and shrinks text inside
+     the box where live's does not shrink. */
+  font-size: var(--body-font-size-m);
+
+  /* Live shadows a box on 54 templates and 229 instances. This is the modal value, on 100 of
+     them, carried the way decision 0024 carries a padding or a radius. */
+  box-shadow: 0 4px 12px rgb(0 0 0 / 3%);
+}
+
+.callout > div > div > *:first-child {
+  margin-top: 0;
+}
+
+.callout > div > div > *:last-child {
+  margin-bottom: 0;
+}
+
+/* #9a1c3e is the only red any box border uses across the sample. It is not the brand red in
+   styles.css, #c20831, and not the rgb(194 0 47) the kartenstatus box fills with. */
+.callout.accent {
+  /* The family's modal radius is 10px, not the 12px the base carries. */
+  border: 4px solid #9a1c3e;
+  border-radius: 10px;
+}
+
+/* Live marks this family with a bar down the reading edge: .ram-advice-block, .ram-card,
+   .ram-block and .ram-row each carry border-left: 6px. The padding, radius and background
+   already matched, so the bar was the whole difference on 50 instances across five templates.
+   It is border-inline-start rather than border-left because ar-sa is one of the ten locales and
+   the bar has to flip with the text direction. */
+.callout.fill {
+  padding: 25px;
+  border: 0;
+  border-inline-start: 6px solid #b02736;
+  background-color: #f8f8f8;
+}
+
+.callout.outline {
+  border: 1px solid #ebeae8;
+}
