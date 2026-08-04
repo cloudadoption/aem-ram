@@ -9,14 +9,14 @@ const styles = readFileSync(new URL('../styles/styles.css', import.meta.url), 'u
 // `body .bck-gray { background-color: var(--ram-background-alternative-color) }`, and that token is
 // already #f7f7f7 here.
 //
-// The grey band is the constant across the 2025 theme, measured by ram2 on three pages that differ
-// in what sits on top: /en-gb/checked-baggage puts article prose straight onto the grey with no card,
-// /en-gb/preparing-your-trip puts it on a #f7f7f7 card inside a white container, and
-// /en-gb/carry-on-baggage on a #f9f9f9 rounded box. The wrappers are per-page authored values; the
-// band is on all three.
+// The grey band is the constant across the 2025 theme, measured by ram2 on three pages that
+// differ in what sits on top: /en-gb/checked-baggage puts article prose straight onto the grey
+// with no card, /en-gb/preparing-your-trip puts it on a #f7f7f7 card inside a white container,
+// and /en-gb/carry-on-baggage on a #f9f9f9 rounded box. The wrappers are per-page authored
+// values; the band is on all three.
 //
-// It also makes the cards visible. A cards block draws white, and drew it on white, so the six small
-// cards on /en-gb/checked-baggage read as no boxes at all.
+// It also makes the cards visible. A cards block draws white, and drew it on white, so the six
+// small cards on /en-gb/checked-baggage read as no boxes at all.
 describe('the page ground', () => {
   it('paints main with live\'s alternative background, not white', () => {
     assert.match(styles, /^main\s*\{[^}]*background-color:\s*var\(--ram-background-alternative-color\)/m);

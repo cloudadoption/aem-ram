@@ -232,6 +232,16 @@ li {
   line-height: 1.4;
 }
 
+/* Live paints the ground below the header #f7f7f7, as `body .bck-gray`, and body itself stays
+   white. The band is the constant across the 2025 theme: article prose sits straight on it on
+   /en-gb/checked-baggage, on a #f7f7f7 card on /en-gb/preparing-your-trip and on a #f9f9f9
+   rounded box on /en-gb/carry-on-baggage, so the wrappers are per-page and the grey is not.
+   It is also what makes a card read as a card: the cards block draws white, and drew it on
+   white, so the six small cards on checked-baggage read as no boxes at all. */
+main {
+  background-color: var(--ram-background-alternative-color);
+}
+
 main > div {
   margin: 40px 16px;
 }
