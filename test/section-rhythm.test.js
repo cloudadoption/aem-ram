@@ -16,24 +16,17 @@ describe('the section rhythm', () => {
     assert.match(main[0], /padding-block:\s*24px/);
   });
 
+  // The whole gap is on the top, so the bottom end is main's padding alone. test/page-end.test.js
+  // owns that end and the reason a sibling selector cannot carry it.
   it('spaces a boundary at live\'s 24, not the boilerplate 40', () => {
     const section = /^main > \.section\s*\{[^}]*\}/m.exec(styles);
     assert.ok(section, 'styles.css declares a main > .section rule');
-    assert.match(section[0], /margin:\s*24px 0/);
+    assert.match(section[0], /margin:\s*24px 0 0/);
     assert.doesNotMatch(section[0], /margin:\s*40px 0/);
   });
 
   // The top is main's padding, so the first section's own margin has to come off or it adds to it.
   it('takes the first section\'s top margin off', () => {
     assert.match(styles, /^main > \.section:first-of-type\s*\{[^}]*margin-top:\s*0/m);
-  });
-
-  // KNOWN AND NOT MATCHED: under the last section a reader sees, this reads 48 against live's 24.
-  // Every page carries a trailing section with no height, the one the metadata block leaves
-  // behind, so :last-child matches that empty one and the last visible section keeps its 24 on
-  // top of main's 24 of padding. Zeroing the bottom margin on all of them moves the problem,
-  // because the empty section still contributes its own top margin.
-  it('takes the last section\'s bottom margin off, which the empty one still defeats', () => {
-    assert.match(styles, /^main > \.section:last-child\s*\{[^}]*margin-block-end:\s*0/m);
   });
 });
