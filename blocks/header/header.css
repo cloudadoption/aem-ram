@@ -43,7 +43,7 @@ header nav[aria-expanded='true'] {
   min-height: 100dvh;
 }
 
-@media (width >= 900px) {
+@media (width >= 1280px) {
   header .nav-wrapper {
     position: relative;
   }
@@ -52,6 +52,12 @@ header nav[aria-expanded='true'] {
     display: flex;
     justify-content: space-between;
     gap: 0 32px;
+
+    /* The section pins its width and drops its inset at --content-cap-breakpoint,
+       which is this same 1280, so the nav follows it rather than keeping a 90% box
+       the section no longer has. */
+    width: var(--content-max-width);
+    padding-inline: 0;
   }
 
   header nav[aria-expanded='true'] {
@@ -143,7 +149,7 @@ header nav[aria-expanded='true'] .nav-hamburger-icon::after {
   transform: rotate(-45deg);
 }
 
-@media (width >= 900px) {
+@media (width >= 1280px) {
   header nav .nav-hamburger {
     display: none;
     visibility: hidden;
@@ -209,7 +215,7 @@ header nav .nav-sections .nav-group > ul {
   font-weight: 400;
 }
 
-@media (width >= 900px) {
+@media (width >= 1280px) {
   header nav .nav-sections {
     display: block;
     visibility: visible;
@@ -332,14 +338,5 @@ header nav .nav-tools {
   .nav-brand a:any-link {
     width: 108px;
     height: 80px;
-  }
-}
-
-/* The section pins its width and drops its inset at --content-cap-breakpoint, so
-   the nav follows it there rather than keeping a 90% box the section no longer has. */
-@media (width >= 1280px) {
-  header nav {
-    width: var(--content-max-width);
-    padding-inline: 0;
   }
 }

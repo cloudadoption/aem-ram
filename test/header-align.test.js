@@ -32,12 +32,12 @@ describe('the header content box', () => {
     assert.match(base[0], /padding-inline:\s*13\.5px/);
   });
 
+  // There is more than one 1280 query since the nav breakpoint moved there, so this
+  // looks for the one carrying the declarations rather than the first one in the file.
   it('pins the width and drops the inset at the section cap, as the section does', () => {
-    const at = declarations.indexOf('@media (width >= 1280px)');
-    assert.ok(at > -1, 'a 1280 query exists');
-    const capped = declarations.slice(at, at + 280);
-    assert.match(capped, /header nav/);
-    assert.match(capped, /width:\s*var\(--content-max-width\)/);
-    assert.match(capped, /padding-inline:\s*0/);
+    const blocks = declarations.split('@media (width >= 1280px)').slice(1);
+    assert.ok(blocks.length, 'a 1280 query exists');
+    const carrying = blocks.filter((b) => /header nav \{[^}]*width:\s*var\(--content-max-width\)[^}]*padding-inline:\s*0/.test(b));
+    assert.equal(carrying.length, 1, 'exactly one 1280 block pins the nav width');
   });
 });
