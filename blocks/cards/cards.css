@@ -132,9 +132,28 @@
 }
 
 .cards > ul > li.cards-card-photo img {
-  /* A photograph fills the card and is 200px tall on live at 768, 992, 1200 and
-     1440 alike, whatever the card width. */
+  /* Live crops ONE card image and no other, so this is what the rest of them get: the image's own
+     ratio, capped by the card. link-card__image is the only class on live carrying object-fit
+     cover, and its box ratio departs from the image's own, 3.92 against a natural 1.99 at 900px
+     wide. Every other card image keeps its ratio, measured across the biggest bucket:
+     /en-gb/experience/dining-on-board/business draws 400x250 at 377x235, /en-gb/cash-miles 703x469
+     at 377x251, /en-gb/our-fleet 267x75 at 267x75 and /en-gb/oneworld/global-network scales
+     1822x293 down to 191x30. A 200px band for all of them distorted 1,037 of the 1,253 images here.
+
+     The width stays DEFINITE, which is what reserves the box: `main img { width: auto }` leaves the
+     used width indefinite, so the declared width and height give a ratio and no size and the card
+     is 0 tall until the image arrives. copyIntrinsicSize carries both attributes onto the image
+     createOptimizedPicture builds, so the browser has what it needs to compute the height from the
+     card's own width. */
   width: 100%;
+  height: auto;
+}
+
+.cards.cover > ul > li.cards-card-photo img {
+  /* A link-card photograph fills the card and is 200px tall on live at 768, 992, 1200 and 1440
+     alike, whatever the card width, so this one is cropped on purpose. The transform marks the
+     block, because no cards block mixes the two: over 1,066 blocks holding an image, 64 are all
+     link-card, 1,002 have none, and none is mixed. */
   height: 200px;
   object-fit: cover;
 }
