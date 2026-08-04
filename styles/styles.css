@@ -41,10 +41,12 @@
   --text-color: var(--ram-text-dark-color);
   --link-color: var(--ram-text-primary-color);
 
-  /* The client declares no hover token. This is their dark brand variant, taken
-     from the name rather than measured, because a hover state cannot be read
-     from a headless computed style. */
-  --link-hover-color: var(--ram-brand-primary-dark-color);
+  /* Read in the client's own /o/ram-airways-theme/2025/css/styles.css on 2026-08-04:
+     `body a:hover{text-decoration:none;color:var(--ram-text-primary-color)}`, which
+     is the rest colour, so a link does not change on hover. This was the dark brand
+     variant, taken from the name rather than measured. That token is a button's
+     ACTIVE state. */
+  --link-hover-color: var(--ram-text-primary-color);
 
   /* fonts */
   --body-font-family: ram-primary-font, ram-primary-font-fallback, sans-serif;
@@ -315,9 +317,10 @@ a:any-link {
   overflow-wrap: break-word;
 }
 
+/* Live removes the underline at rest, `body a:-webkit-any-link{text-decoration:none}`,
+   and keeps it off on hover. This added one where live has none. */
 a:hover {
   color: var(--link-hover-color);
-  text-decoration: underline;
 }
 
 /* buttons */
@@ -414,12 +417,22 @@ button.button.accent {
   color: var(--background-color);
 }
 
+/* Live's primary button moves through three backgrounds and the middle one is not the
+   dark variant. `.ram-btn-f1:hover,:focus` takes --ram-background-positive-color and
+   `.ram-btn-f1:active,.active` takes --ram-brand-primary-dark-color. This read the dark
+   variant on hover, so the button skipped its middle state and had no active state. */
 a.button.accent:hover,
 a.button.accent:focus-visible,
 button.button.accent:hover,
 button.button.accent:focus-visible {
-  border-color: var(--link-hover-color);
-  background-color: var(--link-hover-color);
+  border-color: var(--ram-background-positive-color);
+  background-color: var(--ram-background-positive-color);
+}
+
+a.button.accent:active,
+button.button.accent:active {
+  border-color: var(--ram-brand-primary-dark-color);
+  background-color: var(--ram-brand-primary-dark-color);
 }
 
 a.button.accent[aria-disabled="true"],
