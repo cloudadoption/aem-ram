@@ -131,3 +131,46 @@ describe('the italic faces', () => {
     assert.equal((fonts.match(/font-style:\s*normal/g) || []).length, 11);
   });
 });
+
+// The h1 asks for ram-secondary-font, which is Museo, and fell back to
+// ram-primary-font-fallback, whose 102% size-adjust was swept against Museo SANS.
+// Measured in a browser on a published page, that fallback against Museo:
+//   Fiji Airways 0.959, the long American Airlines title 0.969,
+//   Checked baggage 0.990, Conditions générales 0.963,
+//   the Arabic checked-baggage title 0.970, Ödeme yöntemleri 0.947
+// So the h1 drew 3 to 5 per cent narrow and widened when Museo arrived. On a title
+// near a wrap boundary that flips a line and moves the page below it, and the h1 is
+// above the fold on 965 documents. fonts.css is deferred below 900px, so the swap
+// lands late on mobile, which is where it costs most.
+//
+// Swept the same way the 102% was: 105% gives a mean of 0.9947, 105.5% gives 0.9993,
+// 106% overshoots to 1.0041.
+//
+// Cyrillic is excluded from the mean and reads 1.117 at 105.5%. Museo has no Cyrillic,
+// so neither side draws it and the ratio compares two per-glyph fallbacks.
+describe('the secondary fallback face', () => {
+  const face = /@font-face\s*\{[^}]*ram-secondary-font-fallback[^}]*\}/.exec(fonts)
+    || /@font-face\s*\{[^}]*ram-secondary-font-fallback[^}]*\}/.exec(styles);
+
+  it('exists, rather than borrowing the one tuned for Museo Sans', () => {
+    assert.ok(face, 'a ram-secondary-font-fallback face is declared');
+  });
+
+  it('carries the swept 105.5%', () => {
+    assert.match(face[0], /size-adjust:\s*105\.5%/);
+  });
+
+  it('is a local face, so it costs no request', () => {
+    assert.match(face[0], /src:\s*local\(/);
+  });
+
+  it('is what the secondary stack falls back to', () => {
+    assert.match(styles, /--secondary-font-family:\s*ram-secondary-font,\s*ram-secondary-font-fallback/);
+  });
+
+  it('leaves the body and heading stacks on the 102% face', () => {
+    assert.match(styles, /--body-font-family:\s*ram-primary-font,\s*ram-primary-font-fallback/);
+    assert.match(styles, /--heading-font-family:\s*ram-primary-font,\s*ram-primary-font-fallback/);
+    assert.match(styles, /font-family:\s*ram-primary-font-fallback;\s*size-adjust:\s*102%/);
+  });
+});
