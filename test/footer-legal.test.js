@@ -106,3 +106,26 @@ describe('the legal row styling', () => {
     assert.match(css, /\.footer-legal[\s\S]{0,300}justify-content:\s*center/);
   });
 });
+
+// Live's footer band is `padding-block: 1.5rem` with no breakpoint, and a browser read agrees at
+// both 800 and 1440: 24px top and 24px bottom on `.footer`. Ours was the boilerplate's 40px top,
+// which is a default rather than a measured value.
+//
+// The horizontal inset is left alone. Live's `.footer` has none, and its content inset comes from
+// inner containers that differ per row: at 800 "About us" sits at left 20 and "Payment Methods" at
+// 40, so there is no single live number to copy and our 24 sits inside that range.
+describe('the footer band padding', () => {
+  const inner = /footer \.footer > div \{[\s\S]*?\}/.exec(css);
+
+  it('takes live\'s measured 24px at the top, not the boilerplate\'s 40px', () => {
+    assert.ok(inner, 'the footer inner rule exists');
+    assert.doesNotMatch(inner[0], /padding:\s*40px/);
+    assert.match(inner[0], /padding-block:\s*24px/);
+  });
+
+  // Live has no horizontal footer breakpoint: 0 of 121 min-width values in the 2025 sheet touch
+  // `.footer` padding, and the only footer query is `.footer__container{max-width:1240px}` at 1280.
+  it('drops the 900 step, which live has no counterpart for', () => {
+    assert.doesNotMatch(css, /@media \(width >= 900px\)/);
+  });
+});
