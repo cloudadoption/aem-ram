@@ -208,10 +208,15 @@ describe('the vertical rhythm', () => {
     assert.doesNotMatch(declared, /0\.8em/);
   });
 
-  it('indents a list by the measured 20px, not the browser default 40', () => {
+  // CORRECTED 2026-08-04 from live's own stylesheet: `.seat-content ul{margin-inline-start:2rem}`
+  // with the reboot's `*{padding:0}`, so the indent is a 32px MARGIN and the disc is drawn outside
+  // the list box. The 20px this asserted was a padding gutter, 12px short of live's text.
+  // test/list-metrics.test.js owns the values.
+  it('indents a list by margin, not by a padding gutter', () => {
     const rule = /\nul,\nol\s*\{[\s\S]*?\n\}/.exec(styles);
     assert.ok(rule, 'expected a list rule');
-    assert.match(rule[0], /padding-inline-start:\s*20px/);
+    assert.match(rule[0], /margin-inline-start:\s*32px/);
+    assert.match(rule[0], /padding-inline-start:\s*0/);
   });
 });
 
