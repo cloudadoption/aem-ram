@@ -111,6 +111,19 @@ describe('the breadcrumb styling', () => {
     assert.match(rule, /content:\s*"\s*\|\s*"/);
   });
 
+  // Live hides the trail below 992 and shows it above. Its own rule is
+  // `.breadcrumbs{display:none}` with `@media(min-width:992px){.breadcrumbs{display:flex}}`, and a
+  // browser read agrees: display none with 0 of 5 items visible at 412, flex with 5 visible and 53px
+  // tall at 1000. Ours wrapped to four lines and 91px at 412, which live never shows.
+  it('hides the trail below live\'s 992 and shows it above', () => {
+    assert.match(css, /\.breadcrumb \{[\s\S]{0,120}display:\s*none/);
+    const at = css.indexOf('@media (width >= 992px)');
+    assert.ok(at > -1, 'a 992 query exists');
+    const shown = css.slice(at, at + 220);
+    assert.match(shown, /\.breadcrumb/);
+    assert.match(shown, /display:\s*block/);
+  });
+
   it('lays the trail out in a row with no bullets', () => {
     const rule = css.slice(css.indexOf('.breadcrumb'));
     assert.match(rule, /list-style:\s*none/);
