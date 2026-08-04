@@ -132,3 +132,32 @@ footer .footer .footer-legal p.footer-legal-copy {
   padding-top: 8px;
   font-size: 12px;
 }
+
+/* Live's payment strip is a heading over a flex row of logo boxes. Its own rules, from the 2025 sheet
+   and confirmed in a browser at 1440: container `display:flex; flex-wrap:wrap; gap:1rem`, and
+   `.footer__paymentImage{width:2.5rem;height:1.5rem}`, so 40x24 each, wrapping to two rows for 25.
+
+   Selected with `:has(img)` rather than a JS marker. A list of images is what it is, and the same
+   property keeps the accordion off it: footer-groups.js collapses a list of links and leaves a list
+   with none alone, which is how live behaves, its 25 logo anchors carrying a title and no href.
+
+   ONE DELIBERATE DIVERGENCE: live computes `object-fit: fill` and its assets are not 40x24. The iDeal
+   logo is 1920x728, 2.64:1, squashed into 1.67:1. `contain` draws the same logo undistorted in the
+   same box, so nothing around it moves. */
+footer .footer ul:has(img) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0;
+  padding: 8px 0 0;
+  list-style: none;
+}
+
+/* A descendant selector, not `li > img`: EDS wraps the image in a <picture>, so the served shape is
+   <li><picture><img></picture></li> and the child selector reached nothing. Read on the branch
+   preview, where the logos drew at their natural 34x20 and 40x23 with the default `fill`. */
+footer .footer ul:has(img) img {
+  width: 40px;
+  height: 24px;
+  object-fit: contain;
+}
