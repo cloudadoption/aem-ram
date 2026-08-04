@@ -193,3 +193,35 @@ describe('the group is closed before anything is painted', () => {
     assert.equal(ul.style.display, 'none');
   });
 });
+
+// The payment strip is a heading over a list of logos, which is the same shape as the three link
+// menus, so the accordion collapsed it. Live shows the strip open and its logos are not links: 0 of
+// 25 anchors in live's PaymentMethodsPortlet carry an href, the anchor being there to hold a `title`.
+//
+// So the discriminator is what the list contains. A menu of links collapses; a list with no link in
+// it is content and stays open. A list that cannot be asked, which is every stub in the tests above,
+// is treated as a menu, so nothing that worked before changes.
+describe('footerGroups and a list with no links', () => {
+  const listOf = (linkCount) => ({
+    tagName: 'UL',
+    textContent: '',
+    querySelectorAll: () => Array.from({ length: linkCount }, () => ({})),
+  });
+
+  it('leaves a logo list open, because it holds no link', () => {
+    assert.deepEqual(footerGroups([node('H2', 'Payment Methods'), listOf(0)]), []);
+  });
+
+  it('still collapses a link menu', () => {
+    assert.deepEqual(footerGroups([node('H2', 'About us'), listOf(6)]), [[0, 1]]);
+  });
+
+  it('treats a list it cannot ask as a menu, so the three existing groups are untouched', () => {
+    assert.deepEqual(footerGroups([node('H2', 'Help'), node('UL')]), [[0, 1]]);
+  });
+
+  it('keeps the link menu when a logo list sits beside it', () => {
+    const kids = [node('H2', 'About us'), listOf(6), node('H2', 'Payment Methods'), listOf(0)];
+    assert.deepEqual(footerGroups(kids), [[0, 1]]);
+  });
+});
