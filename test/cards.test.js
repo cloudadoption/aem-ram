@@ -42,12 +42,18 @@ describe('the cards grid', () => {
   });
 });
 
-// Live's card image is 200px tall at 768, 992, 1200 and 1440 alike, whatever the
-// card width, and 157px in a 248px card at 375, which is the same proportion our
+// Live's link-card image is 200px tall at 768, 992, 1200 and 1440 alike, whatever
+// the card width, and 157px in a 248px card at 375, which is the same proportion our
 // wider mobile card reaches at 200px. The boilerplate forced 4/3, which at a
 // 397px card is 298px tall and made the card 676px against live's 456px.
+//
+// THE SCOPE NARROWED on 2026-08-04: this was measured on the link-card and applied to
+// every photo card, and link-card__image is the only class on live carrying object-fit
+// cover. The band distorted 1,037 of the 1,253 images in the bucket. The transform marks
+// the link-card block `cover`, so these assertions moved onto that rule and
+// test/card-image-ratio.test.js covers the rest keeping their own ratio.
 describe('the card image', () => {
-  const rule = /\.cards > ul > li\.cards-card-photo img \{[\s\S]*?\n\}/.exec(declarations)[0];
+  const rule = /\.cards\.cover > ul > li\.cards-card-photo img \{[\s\S]*?\n\}/.exec(declarations)[0];
 
   it('is the measured 200px tall', () => {
     assert.match(rule, /height:\s*200px/);
