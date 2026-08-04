@@ -120,16 +120,17 @@ const between = (from, to) => {
 
 // The first version called this from buildAutoBlocks, which loadFragment also runs: fragment.js
 // calls decorateMain on the header and the footer fragment, so the trail was built three times and
-// the header's own copy landed inside the header band with class "section nav-brand", at top 0 with
-    assert.doesNotMatch(between('function buildAutoBlocks', 'function decorateMain'),
-      /buildBreadcrumb/);
+// the header's own copy landed inside the header band with class "section nav-brand", at top 0
+// with the header's grid on it. Read on the branch preview. It belongs where the page main is
+// named.
 describe('where the breadcrumb is built', () => {
   it('runs from loadEager, on the page own main', () => {
     assert.match(between('async function loadEager', 'try {'), /buildBreadcrumb\(main/);
   });
 
   it('does not run from buildAutoBlocks, which fragments also reach', () => {
-    assert.doesNotMatch(between('function buildAutoBlocks', 'function decorateMain'), /buildBreadcrumb/);
+    const autoBlocks = between('function buildAutoBlocks', 'function decorateMain');
+    assert.doesNotMatch(autoBlocks, /buildBreadcrumb/);
   });
 
   // It prepends a section, so decorateSections has to see it.
