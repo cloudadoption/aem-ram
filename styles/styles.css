@@ -600,9 +600,13 @@ main > .section:has(.callout-wrapper + .callout-wrapper) {
   padding-inline: 13.5px;
 }
 
+/* `margin: auto` centres a wrapper in the content column, and inside a grid cell it shrink-wraps the box to
+   its text and centres that: the ten boxes came out 325 to 400px wide, each a different size. The margin goes
+   with the width. */
 main > .section:has(.callout-wrapper + .callout-wrapper) > div {
   width: auto;
   max-width: none;
+  margin-inline: 0;
   padding-inline: 0;
 }
 
