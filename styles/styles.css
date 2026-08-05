@@ -588,8 +588,14 @@ main .section.highlight {
   margin: 0;
 }
 
+/* `width: 100%` upscaled anything smaller than a column. The App Store badge on /en-gb/ declares 120x40 and
+   drew 397x132, and live draws it at exactly 120x40; the four images beside it went 316x424 to 397x533,
+   100x100 to 397x397 and 286x54 to 397x75, so the section ran 1,052px for two lines of copy.
+
+   The grid column caps a large image on its own, which is what the row was built for. `max-width` says
+   "no wider than the column" and leaves a small image at the size it declares. */
 .image-row img {
-  width: 100%;
+  max-width: 100%;
   height: auto;
 }
 
