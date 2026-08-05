@@ -86,12 +86,13 @@ describe('the icon card is the default, so nothing moves for it', () => {
   });
 });
 
-// A cards block with one card took one column of the three and left 843px of the row empty. Live shows the
-// same content as a full-width row with the photo on one side and the copy on the other: measured at 1440 on
-// live's /en-gb/royal-air-maroc-lounges, four such rows, the photo 505px at x=610 and the copy from x=84.
+// A cards block with one card took one column of the three and left 843px of the row
+// empty. Live shows the same content as a full-width row, the photo on one side and the
+// copy on the other: measured at 1440 on live's /en-gb/royal-air-maroc-lounges, four such
+// rows, the photo 505px at x=610 and the copy from x=84.
 //
-// It is the dominant shape rather than an edge case. Of the 210 cards blocks in the 86 documents rolled on
-// 2026-08-05, 152 hold a single card.
+// It is the dominant shape rather than an edge case. Of the 210 cards blocks in the 86
+// documents rolled on 2026-08-05, 152 hold a single card.
 describe('a cards block with one card', () => {
   it('gives it the whole row instead of one column', () => {
     assert.match(declarations, /:has\(>\s*li:only-child\)/);
