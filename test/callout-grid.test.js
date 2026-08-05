@@ -53,6 +53,14 @@ describe('a run of callouts lays out across', () => {
     assert.match(declarations, /:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*>\s*div\s*\{[^}]*width:\s*auto/);
   });
 
+  // `margin: auto` is what centres a wrapper in the content column, and inside a grid cell it
+  // shrink-wraps the box to its text and centres that: ten boxes came out 325 to 400px wide,
+  // each a different size. The wrapper gives the margin up with the width.
+  it('drops the auto margin that centred the wrapper', () => {
+    const kids = /:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*>\s*div\s*\{[^}]*\}/.exec(declarations)[0];
+    assert.match(kids, /margin(?:-inline)?:\s*0/);
+  });
+
   // The heading above the run is in the same section and is not a callout, so it keeps the row.
   it('gives a non-callout child the whole row', () => {
     const full = /:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*>\s*:not\(\.callout-wrapper\)[^{]*\{[^}]*\}/;
