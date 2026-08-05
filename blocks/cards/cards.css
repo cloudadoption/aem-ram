@@ -23,6 +23,32 @@
   }
 }
 
+/* A cards block holding ONE card took one column of the three and left 843px of the row empty. Live shows the
+   same content as a full-width row, the photo on one side and the copy on the other: measured at 1440 on
+   live's /en-gb/royal-air-maroc-lounges, four such rows with the photo 505px at x=610 and the copy from x=84.
+
+   It is the dominant shape rather than an edge case. Of the 210 cards blocks in the 86 documents rolled on
+   2026-08-05, 152 hold a single card.
+
+   Below 992 both sides stack, which is live's mobile shape and the only thing that fits a phone. */
+@media (width >= 992px) {
+  .cards > ul:has(> li:only-child) {
+    grid-template-columns: 1fr;
+  }
+
+  .cards > ul:has(> li:only-child) > li {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    align-items: center;
+  }
+
+  /* The body's own 16px margin sits inside a column here, where it was the card's only inset. */
+  .cards > ul:has(> li:only-child) > li .cards-card-body {
+    margin: 0;
+  }
+}
+
 .cards > ul > li {
   /* Live cards read `border: 0px none`. */
   background-color: var(--background-color);
