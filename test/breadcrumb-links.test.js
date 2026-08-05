@@ -2,16 +2,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { crumbLabels, crumbPaths, breadcrumbHtml } from '../scripts/breadcrumb.js';
+import { crumbPaths, breadcrumbHtml } from '../scripts/breadcrumb.js';
 
 /*
- * The crumbs can carry links now. Decision 12 was ruled on 2026-08-05 and 327 rows went into the
- * redirects sheet, so live's crumb paths resolve: swept across the 1,418 pages with a trail, 3,519 of
- * 3,520 linkable slots answer.
+ * The crumbs can carry links now. Decision 12 was ruled on 2026-08-05 and 327 rows went into
+ * the redirects sheet, so live's crumb paths resolve: swept across the 1,418 pages with a
+ * trail, 3,519 of 3,520 linkable slots answer.
  *
- * The paths arrive in a second metadata field, `breadcrumb-hrefs`, holding one slot per label in the same
- * order and separated the same way. A slot is empty where the crumb has no link: live leaves the LAST
- * crumb unlinked, because it is the page you are on, and one path in the estate answers nothing.
+ * The paths arrive in a second metadata field, `breadcrumb-hrefs`, holding one slot per label
+ * in the same order and separated the same way. A slot is empty where the crumb has no link:
+ * live leaves the LAST crumb unlinked, because it is the page you are on, and one path in the
+ * estate answers nothing.
  */
 
 describe('crumbPaths', () => {
@@ -29,9 +30,11 @@ describe('crumbPaths', () => {
     assert.deepEqual(crumbPaths(undefined), []);
   });
 
-  // Only a path on this estate. An absolute URL in the field would take a reader off the site.
+  // Only a path on this estate. An absolute URL in the field would take a reader off the site,
+  // and so would a protocol-relative one, which starts with a slash and looks like a path.
   it('drops anything that is not an absolute path', () => {
     assert.deepEqual(crumbPaths('https://evil.example/x | /ok | javascript:void(0)'), ['', '/ok', '']);
+    assert.deepEqual(crumbPaths('//evil.example/x | /ok'), ['', '/ok']);
   });
 });
 
@@ -77,8 +80,8 @@ describe('breadcrumbHtml with paths', () => {
   });
 });
 
-// Live's link is the same colour as the trail's own text, rgb(89, 88, 85), so the anchor cannot take the
-// site's link colour.
+// Live's link is the same colour as the trail's own text, rgb(89, 88, 85), so the anchor cannot
+// take the site's link colour.
 describe('breadcrumb link styling', () => {
   const css = readFileSync(new URL('../styles/styles.css', import.meta.url), 'utf8');
 

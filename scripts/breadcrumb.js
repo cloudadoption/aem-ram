@@ -9,9 +9,11 @@
  * The trail is not derivable from our URLs. /en-gb/american-airlines is flat and live's trail is
  * four levels deep, drawn from its Liferay navigation. It arrives as page metadata instead.
  *
- * THE CRUMBS CARRY NO LINKS. Live's do, and all 45 distinct /en and /en-gb crumb targets answer 404
- * on live while two control URLs answer 200 through the same probe. Against our own estate they
- * resolve 493 of 3,426. So the labels ship and the hrefs wait on a ruling.
+ * THE CRUMBS CARRY LINKS since decision 12 was ruled on 2026-08-05. Live's own crumb targets all
+ * answer 404 or 301 on live, so 327 rows went into the redirects sheet pointing each at the page
+ * live's own redirect names. Swept the 1,418 pages with a trail: 3,519 of 3,520 linkable slots now
+ * resolve here. The paths arrive in their own metadata field, because the trail's own field holds
+ * labels and there is nowhere in it for an href.
  */
 
 // Live's own visible separator, so the authored value reads the way the page renders.
@@ -34,12 +36,31 @@ const escapeHtml = (s) => String(s)
   .replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;');
 
-export const breadcrumbHtml = (labels) => {
+/*
+ * The paths arrive in their own metadata field, one slot per label in the same order and
+ * separated the same way, so a slot can be empty where the crumb has no link. Only a path on
+ * this estate: an absolute URL in the field would take a reader off the site.
+ */
+export const crumbPaths = (value) => {
+  const raw = String(value ?? '').trim();
+  if (!raw) return [];
+  return raw
+    .split(SEPARATOR)
+    .map((part) => part.trim())
+    // A protocol-relative `//host/x` starts with a slash and leaves the site, so it is not a path.
+    .map((part) => (part.startsWith('/') && !part.startsWith('//') ? part : ''));
+};
+
+export const breadcrumbHtml = (labels, paths) => {
   if (!labels || !labels.length) return '';
   const items = labels
     .map((label, i) => {
-      const current = i === labels.length - 1 ? ' aria-current="page"' : '';
-      return `<li${current}>${escapeHtml(label)}</li>`;
+      const last = i === labels.length - 1;
+      const text = escapeHtml(label);
+      // Live leaves the last crumb unlinked, because it is the page you are on.
+      const path = last ? '' : (paths?.[i] ?? '');
+      const inner = path ? `<a href="${escapeHtml(path)}">${text}</a>` : text;
+      return `<li${last ? ' aria-current="page"' : ''}>${inner}</li>`;
     })
     .join('');
   return `<nav class="breadcrumb" aria-label="Breadcrumb"><ol>${items}</ol></nav>`;
@@ -49,8 +70,8 @@ export const breadcrumbHtml = (labels) => {
  * Insert the trail above the first section, which is where live has it: its band sits at top 80,
  * directly under the header, with the crumbs above the title.
  */
-export default function buildBreadcrumb(main, value) {
-  const html = breadcrumbHtml(crumbLabels(value));
+export default function buildBreadcrumb(main, value, pathValue) {
+  const html = breadcrumbHtml(crumbLabels(value), crumbPaths(pathValue));
   if (!html || !main) return 0;
   const section = document.createElement('div');
   section.innerHTML = html;
