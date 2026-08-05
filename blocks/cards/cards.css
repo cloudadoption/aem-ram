@@ -60,8 +60,9 @@
 
   /* 294 of the 491 single-card blocks hold three or four cells, so the third wrapped into a second
      grid row and the copy drew under the photo with 608px empty beside it. Live stacks the cells
-     beside the photo, 24px apart on royal-air-maroc-lounges. */
-  .cards-card-copy {
+     beside the photo, 24px apart on royal-air-maroc-lounges. On a card that stays narrow the cells
+     keep their own 16px margins, and a flex gap would add to them rather than collapse with them. */
+  .cards > ul:has(> li:only-child) > li.cards-card-photo > .cards-card-copy {
     display: flex;
     flex-direction: column;
     gap: 24px;

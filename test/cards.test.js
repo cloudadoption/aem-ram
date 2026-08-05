@@ -181,14 +181,20 @@ describe('the copy box beside the photo', () => {
     .map((m) => m[0])
     .find((b) => b.includes('li.cards-card-photo'));
 
+  // Scoped to the photo card: on a card that stays narrow the cells keep their own 16px margins, and
+  // a flex gap would add to them rather than collapse with them, 56px where the card had 16.
+  const rule = () => {
+    const m = /li\.cards-card-photo > \.cards-card-copy \{[^}]*\}/.exec(step());
+    assert.ok(m, 'no rule for the copy box of a photo card');
+    return m[0];
+  };
+
   it('stacks the cells in one column', () => {
-    const rule = /\.cards-card-copy \{[^}]*\}/.exec(step());
-    assert.ok(rule, 'no rule for the copy box');
-    assert.match(rule[0], /flex-direction:\s*column/);
+    assert.match(rule(), /flex-direction:\s*column/);
   });
 
   it('takes the 24px live leaves between a heading and its copy', () => {
-    assert.match(/\.cards-card-copy \{[^}]*\}/.exec(step())[0], /gap:\s*24px/);
+    assert.match(rule(), /gap:\s*24px/);
   });
 
   // Below 992 the card stacks and the box is a plain div, so mobile keeps the spacing it has.
