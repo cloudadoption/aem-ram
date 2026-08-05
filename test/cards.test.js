@@ -161,6 +161,16 @@ describe('a single card is a full row only when it holds a photo', () => {
   it('leaves the two columns off an unqualified single card', () => {
     assert.doesNotMatch(declarations, /ul:has\(> li:only-child\) > li \{/);
   });
+
+  // The card's 16px inset comes off because in the row it is a column gutter rather than the card's
+  // only inset. A card that stays narrow keeps it, or its copy starts at x=100 where the three-card
+  // block below it on /en-gb/family-program starts at x=116.
+  it('takes the card inset off the row alone', () => {
+    assert.match(
+      declarations,
+      /ul:has\(> li:only-child\) > li\.cards-card-photo \.cards-card-body \{[^}]*margin:\s*0/,
+    );
+  });
 });
 
 // The copy cells cannot share a grid cell and `grid-row: 1 / -1` on the photo resolves against the

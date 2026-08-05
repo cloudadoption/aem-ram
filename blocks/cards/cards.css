@@ -51,8 +51,10 @@
     align-items: center;
   }
 
-  /* The body's own 16px margin sits inside a column here, where it was the card's only inset. */
-  .cards > ul:has(> li:only-child) > li .cards-card-body {
+  /* The body's own 16px margin sits inside a column here, where it was the card's only inset. A card
+     that stays narrow keeps it, or its copy starts at x=100 where the three-card block below it on
+     /en-gb/family-program starts at x=116. */
+  .cards > ul:has(> li:only-child) > li.cards-card-photo .cards-card-body {
     margin: 0;
   }
 
