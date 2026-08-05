@@ -585,19 +585,41 @@ main .section.highlight {
 
    Each box is its own block in its own wrapper, so the grid goes on the section they share. The heading above
    the run is in the same section and keeps the whole row. */
-main .section:has(.callout-wrapper + .callout-wrapper) {
+main > .section:has(.callout-wrapper + .callout-wrapper) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
+
+  /* The section is full-bleed and each wrapper inside it carries the content column, so gridding the
+     section alone laid four 345px tracks across the whole 1440 viewport while every box stayed 1240
+     wide and overflowed its cell. The geometry moves up to the grid and the wrappers give it up. */
+  box-sizing: border-box;
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding-inline: 13.5px;
 }
 
-main .section:has(.callout-wrapper + .callout-wrapper) > :not(.callout-wrapper) {
+main > .section:has(.callout-wrapper + .callout-wrapper) > div {
+  width: auto;
+  max-width: none;
+  padding-inline: 0;
+}
+
+main > .section:has(.callout-wrapper + .callout-wrapper) > :not(.callout-wrapper) {
   grid-column: 1 / -1;
 }
 
 /* `.callout` carries `margin: 0 0 24px`, which would add to the gap. */
-main .section:has(.callout-wrapper + .callout-wrapper) .callout {
+main > .section:has(.callout-wrapper + .callout-wrapper) .callout {
   margin: 0;
+}
+
+@media (width >= 1280px) {
+  main > .section:has(.callout-wrapper + .callout-wrapper) {
+    width: var(--content-max-width);
+    padding-inline: 0;
+  }
 }
 
 /* A run of standalone images. The transform emits each as its own paragraph and

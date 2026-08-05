@@ -28,7 +28,7 @@ const declarations = css.replace(/\/\*[\s\S]*?\*\//g, '');
 // of 10, 9 with 4, 1 with 2.
 describe('a run of callouts lays out across', () => {
   const rule = () => {
-    const m = /main \.section:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*\{[^}]*\}/.exec(declarations);
+    const m = /main > \.section:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*\{[^}]*\}/.exec(declarations);
     assert.ok(m, 'no rule for a section holding consecutive callouts');
     return m[0];
   };
@@ -45,9 +45,18 @@ describe('a run of callouts lays out across', () => {
     assert.match(rule(), /gap:\s*20px/);
   });
 
+  // The section is full-bleed and each wrapper carries the content column, so the
+  // geometry has to move up to the grid, or a box stays 1240 wide and overflows
+  // its 345px cell.
+  it('takes the content column onto the grid and off the wrappers', () => {
+    assert.match(rule(), /max-width:\s*var\(--content-max-width\)/);
+    assert.match(declarations, /:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*>\s*div\s*\{[^}]*width:\s*auto/);
+  });
+
   // The heading above the run is in the same section and is not a callout, so it keeps the row.
   it('gives a non-callout child the whole row', () => {
-    assert.match(declarations, /:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*>\s*:not\(\.callout-wrapper\)[^{]*\{[^}]*grid-column:\s*1\s*\/\s*-1/);
+    const full = /:has\(\.callout-wrapper \+ \.callout-wrapper\)\s*>\s*:not\(\.callout-wrapper\)[^{]*\{[^}]*\}/;
+    assert.match(full.exec(declarations)[0], /grid-column:\s*1\s*\/\s*-1/);
   });
 
   // `.callout` carries `margin: 0 0 24px`, which would add to the grid gap.
@@ -56,6 +65,6 @@ describe('a run of callouts lays out across', () => {
   });
 
   it('leaves a lone callout alone, because one box is not a row', () => {
-    assert.doesNotMatch(declarations, /main \.section:has\(\.callout-wrapper\)\s*\{/);
+    assert.doesNotMatch(declarations, /main > \.section:has\(\.callout-wrapper\)\s*\{/);
   });
 });
