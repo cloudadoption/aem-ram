@@ -27,6 +27,20 @@ footer .footer p {
   margin: 0;
 }
 
+/* Live's footer headings are page headings in the markup and body copy on screen. `Payment Methods` is
+   `<h2 class="f-body-m f-fw-n footer__link">` and computes 14px weight 400, read in a browser on live at
+   1440; the three menu titles are `<h3 class="footer__menu__title f-body-l f-fw-n">` at 16px weight 400.
+
+   Ours took the shared heading rule and drew `Payment Methods` at 32px weight 300, the largest text in the
+   footer. The rule sits on the footer rather than on that heading: no heading in a footer is a page
+   heading, and the payment strip's h2 carries no class to select. `.footer-group-title` overrides it. */
+footer .footer :is(h1, h2, h3, h4, h5, h6) {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
 footer .footer a:any-link {
   color: #fff;
   text-decoration: none;
@@ -160,4 +174,40 @@ footer .footer ul:has(img) img {
   width: 40px;
   height: 24px;
   object-fit: contain;
+}
+
+/* Live lays its three footer menus in a row at desktop and stacks them below 992, read in a browser on
+   live's /en-gb/fiji-airways on 2026-08-05 off the `<ul>` that holds them:
+     at  991  flex-direction column, items 991px wide, y 1440 / 1494 / 1549
+     at  992  flex-direction row, gap 64px, items 95px wide, x 100 / 259 / 444, the ul 407x54
+   992 is live's own step, the same one its breadcrumb uses, and the 2025 sheet has no 900 query. Live's
+   items carry no border at either width.
+
+   Ours stacked at every width, each heading 1240px wide under a 1px divider, so the footer ran 381px
+   against live's 281px and read as a mobile accordion on a desktop page.
+
+   Each menu is its own `.section`, so the row goes on their common parent and the sections that are not
+   menus, the payment strip and the legal row, take the whole line.
+
+   THE OPEN STATE IS OURS RATHER THAN LIVE'S. Live's headings are tab triggers whose href is a relative
+   widget handle, `tabMenuFooter1`, and clicking one moved nothing measurable in live's footer, so there is
+   no desktop behaviour to copy. An open group takes the full row, which leaves the other two in place. */
+@media (width >= 992px) {
+  footer .footer > div {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 64px;
+  }
+
+  footer .footer > div > .section:not(:has(.footer-group-title)) {
+    flex-basis: 100%;
+  }
+
+  footer .footer > div > .section:has(.footer-group-title[aria-expanded="true"]) {
+    flex-basis: 100%;
+  }
+
+  .footer-group-title {
+    border-bottom: 0;
+  }
 }
