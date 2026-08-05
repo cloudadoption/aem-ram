@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { readFileSync } from 'node:fs';
 
 import { fragmentPath } from '../scripts/locale.js';
 
@@ -39,4 +40,18 @@ describe('fragmentPath', () => {
       assert.equal(fragmentPath('footer', `/${locale}/gone`), `/${locale}/footer`);
     }
   });
+});
+
+// The boilerplate's own fallback is the defect, so pin it out of both blocks rather than trusting
+// that a reader will notice it came back.
+describe('header and footer fall back to a locale fragment', () => {
+  const source = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
+
+  for (const [file, name] of [['../blocks/header/header.js', 'nav'], ['../blocks/footer/footer.js', 'footer']]) {
+    it(`${name} does not fall back to the root fragment`, () => {
+      const js = source(file);
+      assert.ok(!js.includes(`: '/${name}'`), `${file} still falls back to the unpublished /${name}`);
+      assert.match(js, /fragmentPath\(/, `${file} should ask fragmentPath for the fallback`);
+    });
+  }
 });
