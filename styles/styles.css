@@ -573,6 +573,59 @@ main .section.highlight {
   padding: 40px 0;
 }
 
+/* A run of callout boxes stacked full width where live lays them across: on
+   /en-gb/baggage-information ten of them each drew 1240x65 in their own row, against live's 353x92 three
+   across. 48 pages carry a run of two or more, 28 with a run of 3, 10 with a run of 10, 9 with 4, 1 with 2.
+
+   Live's grid is fluid rather than stepped, measured on its own page at six widths: 2 per row at 767, 991,
+   992 and 1024 (302, 402, 403 and 417px per box), 3 at 1279 and 1440 (348 and 353). That is
+   `repeat(auto-fill, minmax(~290px, 1fr))` with a 20px gap on live's ~1100px content column. Ours is 1240 at
+   1440, where 290 would fit four across, so 320 is the value that gives three on 1240 and two on the 752 our
+   column measures at width 800.
+
+   Each box is its own block in its own wrapper, so the grid goes on the section they share. The heading above
+   the run is in the same section and keeps the whole row. */
+main > .section:has(.callout-wrapper + .callout-wrapper) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+
+  /* The section is full-bleed and each wrapper inside it carries the content column, so gridding the
+     section alone laid four 345px tracks across the whole 1440 viewport while every box stayed 1240
+     wide and overflowed its cell. The geometry moves up to the grid and the wrappers give it up. */
+  box-sizing: border-box;
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin-inline: auto;
+  padding-inline: 13.5px;
+}
+
+/* `margin: auto` centres a wrapper in the content column, and inside a grid cell it shrink-wraps the box to
+   its text and centres that: the ten boxes came out 325 to 400px wide, each a different size. The margin goes
+   with the width. */
+main > .section:has(.callout-wrapper + .callout-wrapper) > div {
+  width: auto;
+  max-width: none;
+  margin-inline: 0;
+  padding-inline: 0;
+}
+
+main > .section:has(.callout-wrapper + .callout-wrapper) > :not(.callout-wrapper) {
+  grid-column: 1 / -1;
+}
+
+/* `.callout` carries `margin: 0 0 24px`, which would add to the gap. */
+main > .section:has(.callout-wrapper + .callout-wrapper) .callout {
+  margin: 0;
+}
+
+@media (width >= 1280px) {
+  main > .section:has(.callout-wrapper + .callout-wrapper) {
+    width: var(--content-max-width);
+    padding-inline: 0;
+  }
+}
+
 /* A run of standalone images. The transform emits each as its own paragraph and
    they stacked full width: four of them on how-it-works rendered 1240x738 each
    against live's 394px. Live lays them across, three at a time in a 1240px
