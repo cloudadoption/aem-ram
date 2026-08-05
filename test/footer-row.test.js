@@ -77,9 +77,10 @@ describe('footer heading type', () => {
     assert.match(rule, /font-weight:\s*400/);
   });
 
-  // A rule text test passed here while the page was wrong. `footer .footer :is(h2)` is (0,1,2) and
-  // `.footer-group-title` alone is (0,1,0), so the menu titles drew the footer's 14px and the browser
-  // read 14px where live reads 16px. The selector has to out-specify the footer rule.
+  // A rule text test passed here while the page was wrong. `footer .footer :is(h2)` is
+  // (0,1,2) and `.footer-group-title` alone is (0,1,0), so the menu titles drew the
+  // footer's 14px and a browser read 14px where live reads 16px. The selector has to
+  // out-specify the footer rule.
   it('leaves the menu titles at live\'s 16px, and says so specifically enough', () => {
     const title = /footer \.footer \.footer-group-title\s*\{[^}]*\}/.exec(css);
     assert.ok(title, 'the group title rule is not scoped under footer .footer');

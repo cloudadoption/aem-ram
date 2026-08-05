@@ -57,7 +57,7 @@ footer .footer a:hover {
   text-decoration: none;
 }
 
-.footer-group-title {
+footer .footer .footer-group-title {
   margin: 0;
   padding: 12px 0;
   border-bottom: 1px solid rgb(255 255 255 / 20%);
