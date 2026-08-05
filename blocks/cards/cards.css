@@ -36,11 +36,11 @@
    /en-gb/family-program its 101px icon is centred on top of a 397px card at x=522, the middle of
    three tracks. 45 of the 63 single-card blocks whose served image width could be read hold an icon
    and 18 hold a photo, so the row was going to more icon cards than photo cards and put a 101px icon
-   in a 608px column. A card with NO image cell takes the row as one column: 32 blocks are that
-   shape, because the transform dropped live's photo, and two columns would split the copy itself. */
+   in a 608px column. 32 more blocks have no image cell at all and keep the base grid too: live's
+   page for one of them, /en-gb/loft-lounge-fast-track, has a 608px photo beside 608px of copy that
+   the transform dropped, so a third of the row is closer to live's half than all of it is. */
 @media (width >= 992px) {
-  .cards > ul:has(> li:only-child.cards-card-photo),
-  .cards > ul:has(> li:only-child:not(:has(> .cards-card-image))) {
+  .cards > ul:has(> li:only-child.cards-card-photo) {
     grid-template-columns: 1fr;
   }
 

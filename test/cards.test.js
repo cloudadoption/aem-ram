@@ -125,14 +125,30 @@ describe('a single card is a full row only when it holds a photo', () => {
     );
   });
 
-  // 32 single-card blocks carry no image cell at all, because the transform dropped live's photo:
-  // live's /en-gb/loft-lounge-fast-track has one 608px wide beside 608px of copy. With nothing to
-  // sit beside, two columns would split the copy itself, so the card takes the row as one column.
-  it('gives the row to a card with no image cell', () => {
-    assert.match(
-      declarations,
-      /ul:has\(> li:only-child:not\(:has\(> \.cards-card-image\)\)\)[^{]*\{[^}]*grid-template-columns:\s*1fr/,
-    );
+  // 32 single-card blocks carry no image cell, and live's page for one of them,
+  // /en-gb/loft-lounge-fast-track, has a 608px photo beside 608px of copy that the transform
+  // dropped. With nothing to sit beside, neither shape is live's: the copy is a third of the row on
+  // the base grid and all of it on a full row, against live's half. The base grid is the closer of
+  // the two and the state before the row rule, so a card with no photo class keeps it.
+  //
+  // `:has()` CANNOT NEST, so `:has(> li:only-child:not(:has(> .cards-card-image)))` throws a
+  // SyntaxError, and an invalid selector in a list drops the whole rule. Chrome kept the three
+  // columns and said nothing; stylelint passed it.
+  it('never writes a :has() inside a :has(), which drops the rule it is in', () => {
+    const nested = [];
+    for (let i = declarations.indexOf(':has('); i > -1; i = declarations.indexOf(':has(', i + 1)) {
+      let depth = 0;
+      for (let j = i + 4; j < declarations.length; j += 1) {
+        const c = declarations[j];
+        if (c === '(') depth += 1;
+        if (c === ')') { depth -= 1; if (depth === 0) break; }
+        if (depth > 0 && declarations.startsWith(':has(', j)) {
+          nested.push(declarations.slice(i, j + 40));
+          break;
+        }
+      }
+    }
+    assert.deepEqual(nested, []);
   });
 
   it('lays out two columns on the photo card alone', () => {
