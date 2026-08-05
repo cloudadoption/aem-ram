@@ -111,3 +111,95 @@ describe('a cards block with one card', () => {
     assert.match(before.slice(-200), /@media \(width >= 992px\)/);
   });
 });
+
+// Live keeps a single ICON card narrow. On /en-gb/family-program its 101px icon sits centred on
+// top of a 397px card at x=522, the middle of three tracks, where the photo card on
+// royal-air-maroc-lounges is the full 1232. The full-row rule went to both: 45 of the 63
+// single-card blocks whose served image width could be read hold an icon and 18 hold a photo, so
+// it was firing on more icon cards than photo cards, laying a 101px icon in a 608px column.
+describe('a single card is a full row only when it holds a photo', () => {
+  it('gives the row to a photo card', () => {
+    assert.match(
+      declarations,
+      /ul:has\(> li:only-child\.cards-card-photo\)[^{]*\{[^}]*grid-template-columns:\s*1fr/,
+    );
+  });
+
+  // 32 single-card blocks carry no image cell, and live's page for one of them,
+  // /en-gb/loft-lounge-fast-track, has a 608px photo beside 608px of copy that the transform
+  // dropped. With nothing to sit beside, neither shape is live's: the copy is a third of the row on
+  // the base grid and all of it on a full row, against live's half. The base grid is the closer of
+  // the two and the state before the row rule, so a card with no photo class keeps it.
+  //
+  // `:has()` CANNOT NEST, so `:has(> li:only-child:not(:has(> .cards-card-image)))` throws a
+  // SyntaxError, and an invalid selector in a list drops the whole rule. Chrome kept the three
+  // columns and said nothing; stylelint passed it.
+  it('never writes a :has() inside a :has(), which drops the rule it is in', () => {
+    const nested = [];
+    for (let i = declarations.indexOf(':has('); i > -1; i = declarations.indexOf(':has(', i + 1)) {
+      let depth = 0;
+      for (let j = i + 4; j < declarations.length; j += 1) {
+        const c = declarations[j];
+        if (c === '(') depth += 1;
+        if (c === ')') { depth -= 1; if (depth === 0) break; }
+        if (depth > 0 && declarations.startsWith(':has(', j)) {
+          nested.push(declarations.slice(i, j + 40));
+          break;
+        }
+      }
+    }
+    assert.deepEqual(nested, []);
+  });
+
+  it('lays out two columns on the photo card alone', () => {
+    assert.match(
+      declarations,
+      /ul:has\(> li:only-child\) > li\.cards-card-photo \{[^}]*grid-template-columns:\s*repeat\(2, 1fr\)/,
+    );
+  });
+
+  it('leaves the two columns off an unqualified single card', () => {
+    assert.doesNotMatch(declarations, /ul:has\(> li:only-child\) > li \{/);
+  });
+
+  // The card's 16px inset comes off because in the row it is a column gutter rather than the card's
+  // only inset. A card that stays narrow keeps it, or its copy starts at x=100 where the three-card
+  // block below it on /en-gb/family-program starts at x=116.
+  it('takes the card inset off the row alone', () => {
+    assert.match(
+      declarations,
+      /ul:has\(> li:only-child\) > li\.cards-card-photo \.cards-card-body \{[^}]*margin:\s*0/,
+    );
+  });
+});
+
+// The copy cells cannot share a grid cell and `grid-row: 1 / -1` on the photo resolves against the
+// explicit grid, so it spans one row and changes nothing. The block puts one box around them.
+describe('the copy box beside the photo', () => {
+  const block = /@media \(width >= 992px\) \{[\s\S]*?\n\}\n/g;
+  const step = () => [...declarations.matchAll(block)]
+    .map((m) => m[0])
+    .find((b) => b.includes('li.cards-card-photo'));
+
+  // Scoped to the photo card: on a card that stays narrow the cells keep their own 16px margins,
+  // and a flex gap would add to them rather than collapse with them, 56px where the card had 16.
+  const rule = () => {
+    const m = /li\.cards-card-photo > \.cards-card-copy \{[^}]*\}/.exec(step());
+    assert.ok(m, 'no rule for the copy box of a photo card');
+    return m[0];
+  };
+
+  it('stacks the cells in one column', () => {
+    assert.match(rule(), /flex-direction:\s*column/);
+  });
+
+  it('takes the 24px live leaves between a heading and its copy', () => {
+    assert.match(rule(), /gap:\s*24px/);
+  });
+
+  // Below 992 the card stacks and the box is a plain div, so mobile keeps the spacing it has.
+  it('is styled only at the width where the row exists', () => {
+    const outside = declarations.replace(block, '');
+    assert.doesNotMatch(outside, /cards-card-copy/);
+  });
+});

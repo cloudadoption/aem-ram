@@ -1,5 +1,6 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { markIconCards } from './card-icons.js';
+import { groupCopy } from './card-copy.js';
 import copyIntrinsicSize, { reserveIconBox } from './card-size.js';
 
 export default function decorate(block) {
@@ -22,5 +23,6 @@ export default function decorate(block) {
     img.closest('picture').replaceWith(picture);
   });
   markIconCards(ul);
+  groupCopy(ul);
   block.replaceChildren(ul);
 }
