@@ -35,35 +35,58 @@ export const footerGroups = (children) => {
   return groups;
 };
 
+/*
+ * The trigger is a button inside the heading, not the heading itself. `role="button"` on an h2
+ * fails
+ * axe's `aria-allowed-role`, and Lighthouse reported it on every page in the estate: 3 items on
+ * /en-gb/fiji-airways, `h2#about-us`, `h2#destinations` and `h2#help`, holding accessibility to 96
+ * on
+ * desktop. Dropping the role alone would move the failure rather than fix it, because
+ * `aria-expanded`
+ * is not allowed on a heading either.
+ *
+ * Live separates them the same way, its `<h3>` sitting inside an `<a>`.
+ */
+const buttonFor = (title) => {
+  const doc = title.ownerDocument;
+  if (!doc || typeof doc.createElement !== 'function') return null;
+  const button = doc.createElement('button');
+  button.setAttribute('type', 'button');
+  button.setAttribute('aria-expanded', 'false');
+  button.textContent = title.textContent;
+  return button;
+};
+
 const markIn = (container) => {
   const children = [...(container.children || [])];
-  const groups = footerGroups(children).filter(([titleAt]) => !children[titleAt].getAttribute('aria-expanded'));
+  const groups = footerGroups(children)
+    .filter(([titleAt]) => !children[titleAt].querySelector?.('button'))
+    .filter(([titleAt]) => !children[titleAt].getAttribute('aria-expanded'));
+  let marked = 0;
   groups.forEach(([titleAt, listAt]) => {
     const title = children[titleAt];
     const list = children[listAt];
+    const button = buttonFor(title);
+    // No document to create from means no trigger, and a half-marked group would hide the links
+    // behind
+    // a control that is not there.
+    if (!button) return;
+    marked += 1;
     title.classList.add('footer-group-title');
     list.classList.add('footer-group-list');
-    title.setAttribute('role', 'button');
-    title.setAttribute('tabindex', '0');
-    title.setAttribute('aria-expanded', 'false');
+    title.replaceChildren(button);
     // The block's CSS arrives after the footer markup, so a group closed by a
     // class alone paints open and then shuts: CLS went from 0 to 0.232 on
     // mobile. An inline display needs no stylesheet to be in force.
     list.style.display = 'none';
     const toggle = () => {
-      const open = title.getAttribute('aria-expanded') === 'true';
-      title.setAttribute('aria-expanded', open ? 'false' : 'true');
+      const open = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', open ? 'false' : 'true');
       list.style.display = open ? 'none' : '';
     };
-    title.addEventListener('click', toggle);
-    title.addEventListener('keydown', (event) => {
-      if (event && (event.key === 'Enter' || event.key === ' ')) {
-        if (event.preventDefault) event.preventDefault();
-        toggle();
-      }
-    });
+    button.addEventListener('click', toggle);
   });
-  return groups.length;
+  return marked;
 };
 
 // The real tree is footer > .footer.block > wrapper > .section >

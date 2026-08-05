@@ -74,7 +74,19 @@ footer .footer .footer-group-title {
   cursor: pointer;
 }
 
-.footer-group-title::after {
+/* The trigger is a `<button>` inside the heading, so it arrives with the browser's own type, padding and
+   border. `role="button"` on the heading failed axe's `aria-allowed-role` and Lighthouse reported it on
+   every page: 3 items on /en-gb/fiji-airways, holding desktop accessibility to 96. */
+footer .footer .footer-group-title button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.footer-group-title button::after {
   content: "";
   display: inline-block;
   width: 0.5em;
@@ -85,7 +97,7 @@ footer .footer .footer-group-title {
   transform: rotate(45deg) translateY(-0.15em);
 }
 
-.footer-group-title[aria-expanded="true"]::after {
+.footer-group-title button[aria-expanded="true"]::after {
   transform: rotate(-135deg) translateY(-0.15em);
 }
 
@@ -97,7 +109,7 @@ footer .footer .footer-group-title {
   list-style: none;
 }
 
-.footer-group-title[aria-expanded="true"] + .footer-group-list {
+.footer-group-title:has(button[aria-expanded="true"]) + .footer-group-list {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 24px;
@@ -203,7 +215,7 @@ footer .footer ul:has(img) img {
     flex-basis: 100%;
   }
 
-  footer .footer > div > .section:has(.footer-group-title[aria-expanded="true"]) {
+  footer .footer > div > .section:has(.footer-group-title button[aria-expanded="true"]) {
     flex-basis: 100%;
   }
 

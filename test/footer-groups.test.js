@@ -40,7 +40,7 @@ describe('footerGroups', () => {
 const element = (tag, text = '') => {
   const classes = new Set();
   const attrs = {};
-  return {
+  const self = {
     tagName: tag,
     textContent: text,
     children: [],
@@ -50,9 +50,16 @@ const element = (tag, text = '') => {
     getAttribute: (k) => attrs[k] ?? null,
     addEventListener: (name, fn) => { attrs[`on:${name}`] = fn; },
     fire: (name) => attrs[`on:${name}`] && attrs[`on:${name}`](),
+    // The trigger is a button the block creates inside the heading, so the double has to be able to
+    // make one and to hold it.
+    replaceChildren: (...kids) => { self.children = kids; },
+    querySelector: (sel) => self.children.find((c) => c.tagName === sel.toUpperCase()) ?? null,
+    // The DOM upper-cases a created element's tagName, so the double does too.
+    ownerDocument: { createElement: (t) => element(t.toUpperCase()) },
     attrs,
     classes,
   };
+  return self;
 };
 
 describe('markFooterGroups', () => {
@@ -70,24 +77,18 @@ describe('markFooterGroups', () => {
     const h = element('H2', 'About us');
     const ul = element('UL');
     markFooterGroups(footerWith([h, ul]));
-    assert.equal(h.getAttribute('aria-expanded'), 'false');
-  });
-
-  it('makes the heading operable from the keyboard', () => {
-    const h = element('H2', 'About us');
-    markFooterGroups(footerWith([h, element('UL')]));
-    assert.equal(h.getAttribute('role'), 'button');
-    assert.equal(h.getAttribute('tabindex'), '0');
+    assert.equal(h.children[0].getAttribute('aria-expanded'), 'false');
   });
 
   it('opens on a click and closes again', () => {
     const h = element('H2', 'About us');
     const ul = element('UL');
     markFooterGroups(footerWith([h, ul]));
-    h.fire('click');
-    assert.equal(h.getAttribute('aria-expanded'), 'true');
-    h.fire('click');
-    assert.equal(h.getAttribute('aria-expanded'), 'false');
+    const button = h.children[0];
+    button.fire('click');
+    assert.equal(button.getAttribute('aria-expanded'), 'true');
+    button.fire('click');
+    assert.equal(button.getAttribute('aria-expanded'), 'false');
   });
 
   it('returns how many groups it marked', () => {
@@ -153,7 +154,7 @@ describe('markFooterGroups on the shape the block actually passes', () => {
     const section = withChildren('DIV', [h, element('UL')]);
     const wrapper = withChildren('DIV', [section]);
     markFooterGroups(wrapper);
-    assert.equal(h.attrs.role, 'button');
+    assert.equal(h.children[0].tagName, 'BUTTON');
     assert.equal(markFooterGroups(wrapper), 0);
   });
 });
@@ -180,7 +181,7 @@ describe('the group is closed before anything is painted', () => {
     const h = element('H2', 'About us');
     const ul = element('UL');
     markFooterGroups(withChildren('DIV', [h, ul]));
-    h.fire('click');
+    h.children[0].fire('click');
     assert.equal(ul.style.display, '');
   });
 
@@ -226,28 +227,24 @@ describe('footerGroups and a list with no links', () => {
   });
 });
 
-// `role="button"` on the heading fails axe's `aria-allowed-role`, and Lighthouse reports it on every page
-// in the estate: 3 items on /en-gb/fiji-airways, `h2#about-us`, `h2#destinations` and `h2#help`, holding
-// accessibility to 96 on desktop. `aria-expanded` is not allowed on a heading either, so dropping the role
+// `role="button"` on the heading fails axe's `aria-allowed-role`, and Lighthouse reports it on
+// every page
+// in the estate: 3 items on /en-gb/fiji-airways, `h2#about-us`, `h2#destinations` and `h2#help`,
+// holding
+// accessibility to 96 on desktop. `aria-expanded` is not allowed on a heading either, so dropping
+// the role
 // alone would move the failure rather than fix it.
 //
-// The disclosure pattern is a real button inside the heading, which keeps the heading in the outline and
-// gives the control its own semantics. Live's own markup does the same thing, `<h3>` inside `<a>`, with the
+// The disclosure pattern is a real button inside the heading, which keeps the heading in the
+// outline and
+// gives the control its own semantics. Live's own markup does the same thing, `<h3>` inside `<a>`,
+// with the
 // heading and the trigger as separate elements.
 describe('the group toggle is a button, not a heading pretending', () => {
-  const withDoc = (el) => {
-    el.ownerDocument = {
-      createElement: (tag) => {
-        const made = element(tag);
-        made.ownerDocument = el.ownerDocument;
-        return made;
-      },
-    };
-    return el;
-  };
+  const footerWith = (kids) => ({ children: kids });
 
   it('puts a button inside the heading and leaves the heading a heading', () => {
-    const h = withDoc(element('H2', 'About us'));
+    const h = element('H2', 'About us');
     markFooterGroups(footerWith([h, element('UL')]));
     assert.equal(h.getAttribute('role'), null, 'the heading still claims role=button');
     const button = h.children.find((c) => c.tagName === 'BUTTON');
@@ -255,7 +252,7 @@ describe('the group toggle is a button, not a heading pretending', () => {
   });
 
   it('moves the state and the tab stop onto the button', () => {
-    const h = withDoc(element('H2', 'About us'));
+    const h = element('H2', 'About us');
     markFooterGroups(footerWith([h, element('UL')]));
     const button = h.children.find((c) => c.tagName === 'BUTTON');
     assert.equal(button.getAttribute('aria-expanded'), 'false');
@@ -264,14 +261,14 @@ describe('the group toggle is a button, not a heading pretending', () => {
   });
 
   it('carries the heading text into the button', () => {
-    const h = withDoc(element('H2', 'About us'));
+    const h = element('H2', 'About us');
     markFooterGroups(footerWith([h, element('UL')]));
     const button = h.children.find((c) => c.tagName === 'BUTTON');
     assert.equal(button.textContent, 'About us');
   });
 
   it('opens and closes from the button', () => {
-    const h = withDoc(element('H2', 'About us'));
+    const h = element('H2', 'About us');
     const ul = element('UL');
     markFooterGroups(footerWith([h, ul]));
     const button = h.children.find((c) => c.tagName === 'BUTTON');
@@ -281,9 +278,11 @@ describe('the group toggle is a button, not a heading pretending', () => {
     assert.equal(button.getAttribute('aria-expanded'), 'false');
   });
 
-  // A footer arriving without a document to create from must not throw and must not half-mark the group.
+  // A footer arriving without a document to create from must not throw and must not half-mark the
+  // group.
   it('leaves the group alone when it cannot create a button', () => {
     const h = element('H2', 'About us');
+    h.ownerDocument = null;
     assert.equal(markFooterGroups(footerWith([h, element('UL')])), 0);
   });
 });
