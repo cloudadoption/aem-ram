@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { readFileSync } from 'node:fs';
 
 import { imageRuns, wrapImageRuns } from '../scripts/image-rows.js';
 
@@ -126,5 +127,36 @@ describe('wrapImageRuns', () => {
     const wrapper = wrapperWith(['t', 't']);
     wrapImageRuns(wrapper, documentStub, imageKind);
     assert.deepEqual(wrapper.children.map((c) => c.kind), ['t', 't']);
+  });
+});
+
+// The row upscaled a small image to the column width. `.image-row img { width: 100% }` put the App Store
+// badge on /en-gb/ at 397x132 where it declares 120x40 and live draws exactly 120x40, a 3.3x upscale, and
+// did the same to the four images beside it: 316x424 became 397x533, 100x100 became 397x397, 286x54 became
+// 397x75. The section ran 1,052px for two lines of copy and five badges.
+//
+// The grid column and `main img { max-width: 100% }` already cap a large image, which is what the row was
+// built for: four images on /en-gb/how-it-works rendered 1240x738 each against live's 394px. `width: 100%`
+// added nothing there and upscaled everything smaller than a column.
+//
+// Roughly 7 per cent of the estate carries a run like this, so it is not one page.
+describe('an image in a row is not upscaled', () => {
+  const css = readFileSync(new URL('../styles/styles.css', import.meta.url), 'utf8');
+  const rule = () => {
+    const m = /\.image-row img\s*\{[^}]*\}/.exec(css);
+    assert.ok(m, 'no .image-row img rule');
+    return m[0];
+  };
+
+  it('does not force the image to the column width', () => {
+    assert.doesNotMatch(rule(), /width:\s*100%/);
+  });
+
+  it('still caps a large image, which is what the row is for', () => {
+    assert.match(rule(), /max-width:\s*100%/);
+  });
+
+  it('keeps the aspect ratio', () => {
+    assert.match(rule(), /height:\s*auto/);
   });
 });
