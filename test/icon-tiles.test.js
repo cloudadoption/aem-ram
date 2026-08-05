@@ -79,19 +79,25 @@ describe('iconTileSets', () => {
 
   // /de-de/paiement-fractionne serves five in a row under one heading.
   it('groups five in a row', () => {
-    const kids = [iconP(122), textP(), iconP(122), textP(), iconP(122), textP(), iconP(122), textP(), iconP(122), textP()];
+    const kids = [];
+    for (let i = 0; i < 5; i += 1) kids.push(iconP(122), textP());
     assert.equal(iconTileSets(kids)[0].length, 5);
   });
 
   // On /de-de/vorteile-von-silver a tile is icon, title, copy.
   it('takes a tile of an icon and two text elements', () => {
-    const kids = [iconP(), textP('Ruby-Status:'), textP('Ihr Safar Flyer Status'), iconP(), textP('Cash & Miles'), textP('Bezahlen Sie')];
+    const kids = [
+      iconP(), textP('Ruby-Status:'), textP('Ihr Safar Flyer Status'),
+      iconP(), textP('Cash & Miles'), textP('Bezahlen Sie'),
+    ];
     assert.deepEqual(iconTileSets(kids), [[[0, 3], [3, 6]]]);
   });
 
   // paiement-fractionne has two runs, one of 122px icons and one of 48px, split by a heading.
   it('starts a new set at a heading', () => {
-    const kids = [iconP(), textP(), iconP(), textP(), heading(), iconP(), textP(), iconP(), textP()];
+    const kids = [
+      iconP(), textP(), iconP(), textP(), heading(), iconP(), textP(), iconP(), textP(),
+    ];
     assert.deepEqual(iconTileSets(kids), [[[0, 2], [2, 4]], [[5, 7], [7, 9]]]);
   });
 
@@ -124,7 +130,9 @@ describe('iconTileSets', () => {
 
   // A photo between two icon tiles ends the run rather than joining it.
   it('ends a run at a photograph paragraph', () => {
-    const kids = [iconP(), textP(), iconP(), textP(), iconP(800), iconP(), textP(), iconP(), textP()];
+    const kids = [
+      iconP(), textP(), iconP(), textP(), iconP(800), iconP(), textP(), iconP(), textP(),
+    ];
     const sets = iconTileSets(kids);
     assert.deepEqual(sets[0], [[0, 2], [2, 4]]);
     assert.deepEqual(sets[1], [[5, 7], [7, 9]]);
