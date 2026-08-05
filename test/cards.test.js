@@ -125,11 +125,12 @@ describe('a single card is a full row only when it holds a photo', () => {
     );
   });
 
-  // 32 single-card blocks carry no image cell, and live's page for one of them,
-  // /en-gb/loft-lounge-fast-track, has a 608px photo beside 608px of copy that the transform
-  // dropped. With nothing to sit beside, neither shape is live's: the copy is a third of the row on
-  // the base grid and all of it on a full row, against live's half. The base grid is the closer of
-  // the two and the state before the row rule, so a card with no photo class keeps it.
+  // 32 single-card blocks carry no image cell. Live's image on /en-gb/loft-lounge-fast-track is
+  // BROKEN rather than dropped by the transform: its src resolves to the page URL and naturalWidth
+  // is 0, so a 608px CSS box beside 608px of copy paints nothing. With nothing to sit beside,
+  // neither shape is live's: the copy is a third of the row on the base grid and all of it on a
+  // full row, against live's half. The base grid is the closer of the two and the state before the
+  // row rule, so a card with no photo class keeps it.
   //
   // `:has()` CANNOT NEST, so `:has(> li:only-child:not(:has(> .cards-card-image)))` throws a
   // SyntaxError, and an invalid selector in a list drops the whole rule. Chrome kept the three
