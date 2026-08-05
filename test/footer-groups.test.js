@@ -225,3 +225,65 @@ describe('footerGroups and a list with no links', () => {
     assert.deepEqual(footerGroups(kids), [[0, 1]]);
   });
 });
+
+// `role="button"` on the heading fails axe's `aria-allowed-role`, and Lighthouse reports it on every page
+// in the estate: 3 items on /en-gb/fiji-airways, `h2#about-us`, `h2#destinations` and `h2#help`, holding
+// accessibility to 96 on desktop. `aria-expanded` is not allowed on a heading either, so dropping the role
+// alone would move the failure rather than fix it.
+//
+// The disclosure pattern is a real button inside the heading, which keeps the heading in the outline and
+// gives the control its own semantics. Live's own markup does the same thing, `<h3>` inside `<a>`, with the
+// heading and the trigger as separate elements.
+describe('the group toggle is a button, not a heading pretending', () => {
+  const withDoc = (el) => {
+    el.ownerDocument = {
+      createElement: (tag) => {
+        const made = element(tag);
+        made.ownerDocument = el.ownerDocument;
+        return made;
+      },
+    };
+    return el;
+  };
+
+  it('puts a button inside the heading and leaves the heading a heading', () => {
+    const h = withDoc(element('H2', 'About us'));
+    markFooterGroups(footerWith([h, element('UL')]));
+    assert.equal(h.getAttribute('role'), null, 'the heading still claims role=button');
+    const button = h.children.find((c) => c.tagName === 'BUTTON');
+    assert.ok(button, 'no button inside the heading');
+  });
+
+  it('moves the state and the tab stop onto the button', () => {
+    const h = withDoc(element('H2', 'About us'));
+    markFooterGroups(footerWith([h, element('UL')]));
+    const button = h.children.find((c) => c.tagName === 'BUTTON');
+    assert.equal(button.getAttribute('aria-expanded'), 'false');
+    assert.equal(h.getAttribute('aria-expanded'), null);
+    assert.equal(h.getAttribute('tabindex'), null, 'the heading is still a tab stop');
+  });
+
+  it('carries the heading text into the button', () => {
+    const h = withDoc(element('H2', 'About us'));
+    markFooterGroups(footerWith([h, element('UL')]));
+    const button = h.children.find((c) => c.tagName === 'BUTTON');
+    assert.equal(button.textContent, 'About us');
+  });
+
+  it('opens and closes from the button', () => {
+    const h = withDoc(element('H2', 'About us'));
+    const ul = element('UL');
+    markFooterGroups(footerWith([h, ul]));
+    const button = h.children.find((c) => c.tagName === 'BUTTON');
+    button.fire('click');
+    assert.equal(button.getAttribute('aria-expanded'), 'true');
+    button.fire('click');
+    assert.equal(button.getAttribute('aria-expanded'), 'false');
+  });
+
+  // A footer arriving without a document to create from must not throw and must not half-mark the group.
+  it('leaves the group alone when it cannot create a button', () => {
+    const h = element('H2', 'About us');
+    assert.equal(markFooterGroups(footerWith([h, element('UL')])), 0);
+  });
+});
