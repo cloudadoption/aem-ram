@@ -16,6 +16,11 @@
   <meta property="og:title" content="Page not found">
   <script nonce="aem" src="/scripts/scripts.js" type="module"></script>
   <script nonce="aem" type="module">
+    import { localeHome } from '/scripts/locale.js';
+
+    const home = document.querySelector('.error-button-home');
+    if (home) home.href = localeHome(window.location.pathname);
+
     window.addEventListener('load', () => {
       if (document.referrer) {
         const { origin, pathname } = new URL(document.referrer);
@@ -63,7 +68,7 @@
       </svg>
       <h2 class="error-message">Page Not Found</h2>
       <p class="button-container">
-        <a href="/" class="button secondary error-button-home">Go home</a>
+        <a href="/en-gb/" class="button secondary error-button-home">Go home</a>
       </p>
     </div>
   </main>
