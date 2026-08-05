@@ -35,10 +35,10 @@ describe('fragmentPath', () => {
   });
 
   it('names a fragment every locale publishes', () => {
-    for (const locale of ['ar-sa', 'de-de', 'en-gb', 'es-es', 'fr-fr', 'it-it', 'nl-nl', 'pt-pt', 'ru-ru', 'tr-tr']) {
+    ['ar-sa', 'de-de', 'en-gb', 'es-es', 'fr-fr', 'it-it', 'nl-nl', 'pt-pt', 'ru-ru', 'tr-tr'].forEach((locale) => {
       assert.equal(fragmentPath('nav', `/${locale}/gone`), `/${locale}/nav`);
       assert.equal(fragmentPath('footer', `/${locale}/gone`), `/${locale}/footer`);
-    }
+    });
   });
 });
 
@@ -47,11 +47,11 @@ describe('fragmentPath', () => {
 describe('header and footer fall back to a locale fragment', () => {
   const source = (p) => readFileSync(new URL(p, import.meta.url), 'utf8');
 
-  for (const [file, name] of [['../blocks/header/header.js', 'nav'], ['../blocks/footer/footer.js', 'footer']]) {
+  [['../blocks/header/header.js', 'nav'], ['../blocks/footer/footer.js', 'footer']].forEach(([file, name]) => {
     it(`${name} does not fall back to the root fragment`, () => {
       const js = source(file);
       assert.ok(!js.includes(`: '/${name}'`), `${file} still falls back to the unpublished /${name}`);
       assert.match(js, /fragmentPath\(/, `${file} should ask fragmentPath for the fallback`);
     });
-  }
+  });
 });
