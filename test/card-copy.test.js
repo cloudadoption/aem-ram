@@ -8,12 +8,12 @@ import { copyCells, groupCopy } from '../blocks/cards/card-copy.js';
  * gave every cell its own grid cell. 294 of the 491 single-card blocks carry three or four cells
  * rather than two, so the third wrapped into a second grid row and the copy landed UNDER the photo
  * with 608px empty beside it. On /en-gb/royal-air-maroc-lounges the heading sat at y396 next to the
- * photo and its paragraph at y652 below it, where live stacks both beside the photo: photo y292-632,
+ * photo and its paragraph at y652 below it. Live stacks both beside the photo: photo y292-632,
  * heading y342-422, copy y446-558.
  *
  * The cells cannot share one grid cell, and `grid-row: 1 / -1` on the photo resolves against the
  * EXPLICIT grid, which is empty here, so it spans one row and changes nothing (measured). One box
- * around the copy cells is what makes the second column a column.
+ * around the copy cells makes the second column a column.
  *
  * The shapes, counted over the 1,740 generated documents: 203 blocks image + 2 copy cells, 175
  * image + 1, 78 image + 3, 19 two copy cells and no image, 13 three, 3 a single cell.

@@ -30,13 +30,21 @@
    It is the dominant shape rather than an edge case. Of the 210 cards blocks in the 86 documents rolled on
    2026-08-05, 152 hold a single card.
 
-   Below 992 both sides stack, which is live's mobile shape and the only thing that fits a phone. */
+   Below 992 both sides stack, which is live's mobile shape and the only thing that fits a phone.
+
+   ONLY A PHOTO CARD, narrowed on 2026-08-05. Live keeps a single ICON card narrow: on
+   /en-gb/family-program its 101px icon is centred on top of a 397px card at x=522, the middle of
+   three tracks. 45 of the 63 single-card blocks whose served image width could be read hold an icon
+   and 18 hold a photo, so the row was going to more icon cards than photo cards and put a 101px icon
+   in a 608px column. A card with NO image cell takes the row as one column: 32 blocks are that
+   shape, because the transform dropped live's photo, and two columns would split the copy itself. */
 @media (width >= 992px) {
-  .cards > ul:has(> li:only-child) {
+  .cards > ul:has(> li:only-child.cards-card-photo),
+  .cards > ul:has(> li:only-child:not(:has(> .cards-card-image))) {
     grid-template-columns: 1fr;
   }
 
-  .cards > ul:has(> li:only-child) > li {
+  .cards > ul:has(> li:only-child) > li.cards-card-photo {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
@@ -46,6 +54,15 @@
   /* The body's own 16px margin sits inside a column here, where it was the card's only inset. */
   .cards > ul:has(> li:only-child) > li .cards-card-body {
     margin: 0;
+  }
+
+  /* 294 of the 491 single-card blocks hold three or four cells, so the third wrapped into a second
+     grid row and the copy drew under the photo with 608px empty beside it. Live stacks the cells
+     beside the photo, 24px apart on royal-air-maroc-lounges. */
+  .cards-card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 }
 
