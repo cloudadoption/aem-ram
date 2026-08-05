@@ -96,8 +96,11 @@ function buildIconTileAutoBlocks(main) {
         const [icon, ...copy] = kids.slice(from, to);
         return copy.length ? [{ elems: [icon] }, { elems: copy }] : [{ elems: [icon] }];
       });
+      // buildBlock MOVES each cell's element into the block, so the insertion point has to be read
+      // before it is built or the first tile is already inside the block we want to place beside it.
+      const anchor = kids[tiles[0][0]].previousElementSibling;
       const block = buildBlock('cards', rows);
-      kids[tiles[0][0]].before(block);
+      if (anchor) anchor.after(block); else section.prepend(block);
     });
   });
 }
