@@ -17,6 +17,7 @@ import buildBreadcrumb from './breadcrumb.js';
 
 import { applyLocale } from './locale.js';
 import { isBareEmbedLink } from './embed-url.js';
+import { iconTileSets } from './icon-tiles.js';
 
 if (window.trustedTypes && window.trustedTypes.createPolicy) {
   const innerTT = window.trustedTypes.createPolicy('tt-inner', {
@@ -80,6 +81,31 @@ function buildWidgetAutoBlocks(main) {
 }
 
 /**
+ * Wraps a run of live's icon tiles in a cards block. Live lays them 397px wide and three across
+ * with the icon on top; they arrive here as default content, an icon alone in a full-width
+ * paragraph followed by its copy, so /de-de/vorteile-von-silver runs 5,145px against live's 3,882
+ * and shows four of its benefits as cards and the rest as full-width rows.
+ * @param {Element} main The container element
+ */
+function buildIconTileAutoBlocks(main) {
+  [...main.children].forEach((section) => {
+    const kids = [...section.children];
+    // Last set first, so the earlier indexes stay valid while the DOM changes under them.
+    iconTileSets(kids).reverse().forEach((tiles) => {
+      const rows = tiles.map(([from, to]) => {
+        const [icon, ...copy] = kids.slice(from, to);
+        return copy.length ? [{ elems: [icon] }, { elems: copy }] : [{ elems: [icon] }];
+      });
+      // buildBlock MOVES each cell's element into the block, so the insertion point is read before
+      // it is built, or the first tile is already inside the block we want to place beside it.
+      const anchor = kids[tiles[0][0]].previousElementSibling;
+      const block = buildBlock('cards', rows);
+      if (anchor) anchor.after(block); else section.prepend(block);
+    });
+  });
+}
+
+/**
  * Builds all synthetic blocks in a container element.
  * @param {Element} main The container element
  */
@@ -122,6 +148,7 @@ function buildAutoBlocks(main) {
     }
     buildWidgetAutoBlocks(main);
     buildEmbedAutoBlocks(main);
+    buildIconTileAutoBlocks(main);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Auto Blocking failed', error);
