@@ -111,3 +111,63 @@ describe('a cards block with one card', () => {
     assert.match(before.slice(-200), /@media \(width >= 992px\)/);
   });
 });
+
+// Live keeps a single ICON card narrow. On /en-gb/family-program its 101px icon sits centred on
+// top of a 397px card at x=522, the middle of three tracks, where the photo card on
+// royal-air-maroc-lounges is the full 1232. The full-row rule went to both: 45 of the 63
+// single-card blocks whose served image width could be read hold an icon and 18 hold a photo, so
+// it was firing on more icon cards than photo cards, laying a 101px icon in a 608px column.
+describe('a single card is a full row only when it holds a photo', () => {
+  it('gives the row to a photo card', () => {
+    assert.match(
+      declarations,
+      /ul:has\(> li:only-child\.cards-card-photo\)[^{]*\{[^}]*grid-template-columns:\s*1fr/,
+    );
+  });
+
+  // 32 single-card blocks carry no image cell at all, because the transform dropped live's photo:
+  // live's /en-gb/loft-lounge-fast-track has one 608px wide beside 608px of copy. With nothing to
+  // sit beside, two columns would split the copy itself, so the card takes the row as one column.
+  it('gives the row to a card with no image cell', () => {
+    assert.match(
+      declarations,
+      /ul:has\(> li:only-child:not\(:has\(> \.cards-card-image\)\)\)[^{]*\{[^}]*grid-template-columns:\s*1fr/,
+    );
+  });
+
+  it('lays out two columns on the photo card alone', () => {
+    assert.match(
+      declarations,
+      /ul:has\(> li:only-child\) > li\.cards-card-photo \{[^}]*grid-template-columns:\s*repeat\(2, 1fr\)/,
+    );
+  });
+
+  it('leaves the two columns off an unqualified single card', () => {
+    assert.doesNotMatch(declarations, /ul:has\(> li:only-child\) > li \{/);
+  });
+});
+
+// The copy cells cannot share a grid cell and `grid-row: 1 / -1` on the photo resolves against the
+// explicit grid, so it spans one row and changes nothing. The block puts one box around them.
+describe('the copy box beside the photo', () => {
+  const block = /@media \(width >= 992px\) \{[\s\S]*?\n\}\n/g;
+  const step = () => [...declarations.matchAll(block)]
+    .map((m) => m[0])
+    .find((b) => b.includes('li.cards-card-photo'));
+
+  it('stacks the cells in one column', () => {
+    const rule = /\.cards-card-copy \{[^}]*\}/.exec(step());
+    assert.ok(rule, 'no rule for the copy box');
+    assert.match(rule[0], /flex-direction:\s*column/);
+  });
+
+  it('takes the 24px live leaves between a heading and its copy', () => {
+    assert.match(/\.cards-card-copy \{[^}]*\}/.exec(step())[0], /gap:\s*24px/);
+  });
+
+  // Below 992 the card stacks and the box is a plain div, so mobile keeps the spacing it has.
+  it('is styled only at the width where the row exists', () => {
+    const outside = declarations.replace(block, '');
+    assert.doesNotMatch(outside, /cards-card-copy/);
+  });
+});
