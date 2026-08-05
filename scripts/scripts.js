@@ -219,7 +219,7 @@ async function loadEager(doc) {
     // Not in buildAutoBlocks: fragment.js runs decorateMain on the header and the footer
     // fragment too, so the trail was built three times and the header's copy landed in the band.
     // Before decorateMain, because it prepends a section decorateSections has to see.
-    buildBreadcrumb(main, getMetadata('breadcrumb'));
+    buildBreadcrumb(main, getMetadata('breadcrumb'), getMetadata('breadcrumb-hrefs'));
     decorateMain(main);
     decorateImageRows(main, document);
     document.body.classList.add('appear');

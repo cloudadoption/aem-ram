@@ -14,9 +14,9 @@ import { crumbLabels, breadcrumbHtml } from '../scripts/breadcrumb.js';
 // 253px tall and transparent with a 50px uppercase Museo title on 2022, and 156px on #f7f7f7 with a
 // 40px mixed-case title on 2025.
 //
-// THE CRUMBS CARRY NO LINKS. Live's own do, and all 45 distinct /en and /en-gb crumb targets answer
-// 404 on live, following redirects, while two control URLs answer 200 through the same probe. That
-// is PENDING DECISION 12: the labels ship, the hrefs wait.
+// THE CRUMBS CARRY LINKS since decision 12 was ruled on 2026-08-05: 327 redirect rows point each of
+// live's own crumb targets at the page live's redirect names, and 3,519 of 3,520 linkable slots
+// resolve here. The paths arrive in their own metadata field; see test/breadcrumb-links.test.js.
 
 describe('crumbLabels', () => {
   it('splits live\'s own separator', () => {

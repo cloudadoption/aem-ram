@@ -709,6 +709,19 @@ main .breadcrumb li {
   font-weight: 400;
 }
 
+/* Live's crumb link is the same colour as the trail's own text and carries no underline. Read in a
+   browser on 2026-08-05 from /en-gb/american-airlines: rgb(89, 88, 85), text-decoration-line none,
+   weight 400, and its stylesheet has no hover rule. The underline on hover is ours, so a reader has
+   something to aim at without changing how the trail looks at rest. */
+.breadcrumb a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
 .breadcrumb li:not(:last-child)::after {
   content: " | ";
   color: #7b7a78;
