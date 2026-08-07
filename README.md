@@ -1,5 +1,5 @@
-# Your Project's Title...
-Your project's description...
+# Royal Air Maroc
+The royalairmaroc.com site on Edge Delivery Services, migrated from Liferay. Ten locales, content authored in DA.
 
 ## Environments
 - Preview: https://main--aem-ram--cloudadoption.aem.page/
