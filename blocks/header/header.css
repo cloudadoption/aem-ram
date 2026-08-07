@@ -318,14 +318,16 @@ header nav .nav-tools {
 }
 
 /* Live's header carries the brand mark, not the words. The SVG is 65x48 up to
-   700px wide and 108x80 from 768, measured at nine widths. It is served from the
-   live origin, as the fonts already are, until cutover, and head.html already
-   preconnects there. The words stay in the document for a screen reader. */
+   700px wide and 108x80 from 768, measured at nine widths. It is live's own file,
+   carried here at 11.4 KB rather than hot-linked, so the header does not depend on
+   royalairmaroc.com or on that theme path surviving. The fonts are still served from
+   the live origin, which is what head.html preconnects for. The words stay in the
+   document for a screen reader. */
 .nav-brand a:any-link {
   display: block;
   width: 65px;
   height: 48px;
-  background-image: url('https://www.royalairmaroc.com/o/ram-airways-theme/2025/assets/images/logo_ram.svg');
+  background-image: url('/icons/logo-ram.svg');
   background-repeat: no-repeat;
   background-position: left center;
   background-size: contain;

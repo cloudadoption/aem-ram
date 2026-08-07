@@ -62,9 +62,10 @@ describe('markNavGroups', () => {
 // Live's header carries the brand mark, not the words. The migrated header
 // showed the text "Royal Air Maroc". The SVG is 65x48 up to 700px wide and
 // 108x80 from 768, measured at 375, 480, 576, 600, 700, 768, 992, 1200 and 1440.
-// The mark is carried in the repo, not hot-linked: it needs no licence, where the fonts do. Ruled 2026-08-07,
-// decision K. A background-image on the live origin makes the header's brand depend on royalairmaroc.com being up
-// and on that theme path surviving, and it is 11.4 KB the CDN could serve from our own origin instead.
+// The mark is carried in the repo, not hot-linked: it needs no licence, where the
+// fonts do. Ruled 2026-08-07, decision K. A background-image on the live origin
+// makes the header's brand depend on royalairmaroc.com being up and on that theme
+// path surviving, and it is 11.4 KB our own origin can serve.
 describe('the header brand mark', () => {
   const styles = readFileSync(new URL('../blocks/header/header.css', import.meta.url), 'utf8');
   const declarations = styles.replace(/\/\*[\s\S]*?\*\//g, '');
