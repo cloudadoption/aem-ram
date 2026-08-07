@@ -3,6 +3,7 @@ import { fragmentPath } from '../../scripts/locale.js';
 import { loadFragment } from '../fragment/fragment.js';
 import { markFooterGroups } from './footer-groups.js';
 import { markLegalRow } from './footer-legal.js';
+import { markSocialRow } from './footer-social.js';
 
 /**
  * loads and decorates the footer
@@ -23,5 +24,6 @@ export default async function decorate(block) {
 
   markFooterGroups(footer);
   markLegalRow(footer);
+  markSocialRow(footer);
   block.append(footer);
 }

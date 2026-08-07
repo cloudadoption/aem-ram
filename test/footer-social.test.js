@@ -30,7 +30,10 @@ const el = (tag, text = '', children = [], href = '') => {
   node.querySelectorAll = (sel) => {
     const want = sel.toUpperCase();
     const out = [];
-    const walk = (n) => (n.children || []).forEach((c) => { if (c.tagName === want) out.push(c); walk(c); });
+    const walk = (n) => (n.children || []).forEach((c) => {
+      if (c.tagName === want) out.push(c);
+      walk(c);
+    });
     walk(node);
     return out;
   };
