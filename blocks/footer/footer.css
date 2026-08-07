@@ -119,6 +119,25 @@ footer .footer .footer-group-title button {
   font-size: var(--body-font-size-s);
 }
 
+/* Live's social row is five icon links, 37x36 each with 16px gaps, measured in a browser
+   at 1440 on /en-gb/checked-baggage. Ours are text labels, which are shorter: unstyled
+   they came out 18px tall with 4px gaps and the X link 9px wide, so the row was a third
+   target-size node on a page that had two. 24x24 is the minimum axe checks, and 8px of
+   inline padding is what carries the X link past it. The row wraps rather than shrinking,
+   because five labels are wider than five icons. */
+footer .footer .footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+footer .footer .footer-social a:any-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding-inline: 8px;
+}
+
 /* Live closes the footer with a centred row of legal links and a copyright line.
    Its own rules, from /o/ram-airways-theme/2025/css/styles.css:
      .footer__webmap li{border-inline-end:1px solid var(--ram-text-inverse-color);
